@@ -27,6 +27,7 @@ return array(
     'CreateComentariosTable' => $baseDir . '/database/migrations/2015_10_01_134655_create_comentarios_table.php',
     'CreateConfiguracaosTable' => $baseDir . '/database/migrations/2015_09_18_115856_create_configuracaos_table.php',
     'CreateContatosTable' => $baseDir . '/database/migrations/2015_09_17_184942_create_contatos_table.php',
+    'CreateDepoismentosTable' => $baseDir . '/database/migrations/2015_10_02_144831_create_depoismentos_table.php',
     'CreateDicasTable' => $baseDir . '/database/migrations/2015_09_17_185131_create_dicas_table.php',
     'CreateDownloadsTable' => $baseDir . '/database/migrations/2015_09_17_185221_create_downloads_table.php',
     'CreateEmailsTable' => $baseDir . '/database/migrations/2015_09_17_185232_create_emails_table.php',

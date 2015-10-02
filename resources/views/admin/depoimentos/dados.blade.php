@@ -6,10 +6,10 @@
         <div class="page-content">
             <div class="page-head">
                 <div class="page-title">
-                    <h1>Programas</h1>
+                    <h1>Depoimentos</h1>
                 </div>
             </div>
-            @include('admin.static.breadcrumb', ['active' => 'Programas', 'retorno' => 'programas/listar'])
+            @include('admin.static.breadcrumb', ['active' => 'Depoimentos', 'retorno' => 'depoimentos/listar'])
             <div class="row">
                 <div class="col-md-12">
 
@@ -18,18 +18,18 @@
                     <div class="portlet box blue">
                         <div class="portlet-title">
                             <div class="caption">
-                                <i class="fa fa-gift"></i> Novo Programa
+                                <i class="fa fa-gift"></i> Novo Depoimento
                             </div>
                         </div>
                         <div class="portlet-body form">
-                            <form role="form" action="{{ url($route) }}" method="post" enctype="multipart/form-data">
+                            <form role="form" action="{{ url($route) }}" method="post">
                                 @if ($put) @include('admin.static.field-put') @endif
                                 {!! csrf_field() !!}
                                 <div class="form-body">
 
                                     <div class="form-group">
-                                        <label>Título</label>
-                                        <input name="titulo" type="text" class="form-control" placeholder="Título Programas" value="{{ $dados->titulo or old('titulo') }}">
+                                        <label>Nome</label>
+                                        <input name="nome" type="text" class="form-control" placeholder="Nome do depoente" value="{{ $dados->nome or old('nome') }}">
                                     </div>
      
                                     <div class="form-group">
@@ -39,11 +39,9 @@
 
                                     <div class="form-group">
                                         <label>Codigo Vídeo</label>
-                                        <input name="codigo" type="text" class="form-control" placeholder="Código do vídeo" value="{{ $dados->codigo or old('codigo') }}">
+                                        <input name="video" type="text" class="form-control" placeholder="Código do vídeo" value="{{ $dados->video or old('video') }}">
                                     </div>
-
                                 </div>
-
 
                                 <div class="form-actions">
                                     <button type="submit" class="btn blue">Enviar</button>
@@ -52,7 +50,6 @@
                             </form>
                         </div>
                     </div>
-
                 </div>
             </div>
          </div>

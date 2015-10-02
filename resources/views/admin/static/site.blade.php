@@ -344,6 +344,26 @@
                     </li>
                 @endif
 
+                <!-- DEPOIMENTOS -->
+                @if(Access::permissao('depoimentos'))
+                    <li class="{{ Request::is('admin/depoimentos/*') ? 'active' : ''  }}">
+                        <a href="javascript:;">
+                            <i class="icon-question"></i>
+                            <span class="title">Depoimentos</span>
+                            <span class="selected"></span>
+                            <span class="arrow open"></span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="{{ Request::is('admin/depoimentos/listar') ? 'active' : ''  }}">
+                                <a href="{{url('admin/depoimentos/listar/')}}"> Listar </a>
+                            </li>
+                            <li class="{{ Request::is('admin/depoimentos/novo') ? 'active' : ''  }}">
+                                <a href="{{url('admin/depoimentos/novo/')}}"> Novo </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
                 <!-- NEWSLETTER -->
                 @if(Access::permissao('newsletter'))
                     <li class="{{ Request::is('admin/newsletter/*') ? 'active' : ''  }}">

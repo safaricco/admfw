@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProgramasTable extends Migration
+class CreateDepoismentosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,11 @@ class CreateProgramasTable extends Migration
      */
     public function up()
     {
-        Schema::create('programas', function (Blueprint $table) {
-            $table->increments('id_programa');
-            $table->string('titulo');
+        Schema::create('depoimentos', function (Blueprint $table) {
+            $table->increments('id_depoimento');
+            $table->string('nome');
             $table->longText('texto');
-            $table->string('codigo');
-            $table->date('data')->nullable();
+            $table->string('video')->nullable();
             $table->integer('status')->default(1);
             $table->timestamps();
         });
@@ -30,6 +29,6 @@ class CreateProgramasTable extends Migration
      */
     public function down()
     {
-        Schema::drop('programas');
+        Schema::drop('depoimentos');
     }
 }

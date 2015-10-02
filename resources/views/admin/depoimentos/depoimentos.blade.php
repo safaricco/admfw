@@ -6,10 +6,10 @@
         <div class="page-content">
             <div class="page-head">
                 <div class="page-title">
-                    <h1>Programas</h1>
+                    <h1>Depoimentos</h1>
                 </div>
             </div>
-            @include('admin.static.breadcrumb', ['active' => 'Programas', 'retorno' => 'programas/listar'])
+            @include('admin.static.breadcrumb', ['active' => 'Depoimentos', 'retorno' => 'depoimentos/listar'])
             <div class="row">
                 <div class="col-md-12">
 
@@ -18,7 +18,7 @@
                     <div class="portlet box blue">
                         <div class="portlet-title">
                             <div class="caption">
-                                <i class="fa fa-edit"></i> Listando Programas
+                                <i class="fa fa-edit"></i> Listando Depoimentos
                             </div>
                         </div>
                         <div class="portlet-body">
@@ -26,7 +26,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="btn-group">
-                                            <a href="{{url('admin/programas/novo')}}">
+                                            <a href="{{url('admin/depoimentos/novo')}}">
                                             <button id="sample_editable_1_new" class="btn green">
                                             Novo <i class="fa fa-plus"></i>
                                             </button>
@@ -43,7 +43,7 @@
                             <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
                             <thead>
                             <tr>
-                                <th> Titulo </th>
+                                <th> Nome </th>
                                 <th> Texto </th>
                                 <th> Código Vídeo </th>
                                 <th class="col-md-2"> Ações </th>
@@ -51,18 +51,18 @@
                             </thead>
 
                             <tbody>
-                                @foreach($programas as $programa)    
+                                @foreach($depoimentos as $depoimento)
                                     <tr>  
-                                        <td> {{$programa->titulo}} </td>
-                                        <td> {{$programa->texto}} </td>
-                                        <td> {{$programa->codigo}} </td>
+                                        <td> {{ $depoimento->nome }} </td>
+                                        <td> {!! $depoimento->texto !!} </td>
+                                        <td> {{ $depoimento->video }} </td>
                                         <td>
-                                            <a href="{{ url('admin/programas/editar/' . $programa->id_programa) }}"><i class="fa fa-edit"></i> Editar </a>
-                                            <a href="{{ url('admin/programas/destroy/' . $programa->id_programa) }}"><i class="fa fa-trash"></i>  Excluir </a>
-                                            @if ($programa->status == 1)
-                                                <a href="{{ url('/admin/programas/status/0/' . $programa->id_programa) }}"><i class="fa fa-remove"></i> Desativar</a>
+                                            <a href="{{ url('admin/depoimentos/editar/' . $depoimento->id_depoimento) }}"><i class="fa fa-edit"></i> Editar </a>
+                                            <a href="{{ url('admin/depoimentos/destroy/' . $depoimento->id_depoimento) }}"><i class="fa fa-trash"></i>  Excluir </a>
+                                            @if ($depoimento->status == 1)
+                                                <a href="{{ url('/admin/depoimentos/status/0/' . $depoimento->id_depoimento) }}"><i class="fa fa-remove"></i> Desativar</a>
                                             @else
-                                                <a href="{{ url('/admin/programas/status/1/' . $programa->id_programa) }}"><i class="fa fa-remove"></i> Ativar</a>
+                                                <a href="{{ url('/admin/depoimentos/status/1/' . $depoimento->id_depoimento) }}"><i class="fa fa-remove"></i> Ativar</a>
                                             @endif
                                         </td>
                                     </tr>

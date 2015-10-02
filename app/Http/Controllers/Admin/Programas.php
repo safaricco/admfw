@@ -36,8 +36,9 @@ class Programas extends Controller
     {
         $validation = Validator::make($request->all(), [
             'titulo'    => 'required|string',
-            'texto'     => 'required|string',
-            'codigo'    => 'required|string',
+            'texto'     => 'string',
+            'codigo'    => 'string',
+            'data'      => 'date',
         ]);
 
         if ($validation->fails()) :
@@ -46,9 +47,10 @@ class Programas extends Controller
 
             $programas = new Programa();
 
-            $programas->titulo    = $request->titulo;
-            $programas->texto     = $request->texto;
-            $programas->codigo    = $request->codigo;
+            $programas->titulo  = $request->titulo;
+            $programas->texto   = $request->texto;
+            $programas->codigo  = $request->codigo;
+            $programas->data    = $request->data;
 
             $programas->save();
 
@@ -81,8 +83,9 @@ class Programas extends Controller
     {
         $validation = Validator::make($request->all(), [
             'titulo'    => 'required|string',
-            'texto'     => 'required|string',
-            'codigo'    => 'required|string',
+            'texto'     => 'string',
+            'codigo'    => 'string',
+            'data'      => 'date',
         ]);
 
         if ($validation->fails()) :
@@ -91,9 +94,10 @@ class Programas extends Controller
 
             $programas = Programa::findOrFail($id);
 
-            $programas->titulo    = $request->titulo;
-            $programas->texto     = $request->texto;
-            $programas->codigo    = $request->codigo;
+            $programas->titulo  = $request->titulo;
+            $programas->texto   = $request->texto;
+            $programas->codigo  = $request->codigo;
+            $programas->data    = $request->data;
 
             $programas->save();
 

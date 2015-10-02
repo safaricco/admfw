@@ -28,9 +28,9 @@ class Funcoes extends Controller
      */
     public function create()
     {
-        $dados['put']           = false;
-        $dados['dados']         = '';
-        $dados['route']         = 'admin/configuracoes/modulos/store';
+        $dados['put']   = false;
+        $dados['dados'] = '';
+        $dados['route'] = 'admin/configuracoes/modulos/store';
         return view('admin/funcoes/dados', $dados);
     }
 
@@ -53,9 +53,9 @@ class Funcoes extends Controller
      */
     public function show($id)
     {
-        $dados['put']           = false;
-        $dados['dados']         = Funcao::findOrFail($id);
-        $dados['route']         = 'admin/configuracoes/modulos/atualizar/'.$id;
+        $dados['put']   = true;
+        $dados['dados'] = Funcao::findOrFail($id);
+        $dados['route'] = 'admin/configuracoes/modulos/atualizar/'.$id;
         return view('admin/funcoes/dados', $dados);
     }
 

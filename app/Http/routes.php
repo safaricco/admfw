@@ -104,7 +104,7 @@ Route::group(['prefix' => 'admin/', 'middleware' => 'auth.aux'], function(){
         Route::post('store', 'Admin\Programas@store');
         Route::get('editar/{id}', 'Admin\Programas@show@{id}');
         Route::put('atualizar/{id}', 'Admin\Programas@update@{id}');
-        Route::post('destroy/{id}', 'Admin\Programas@destroy@{id}');
+        Route::get('destroy/{id}', 'Admin\Programas@destroy@{id}');
         Route::get('status/{status}/{id}', 'Admin\Programas@updateStatus@{status}@{id}');
     });
 
@@ -167,6 +167,16 @@ Route::group(['prefix' => 'admin/', 'middleware' => 'auth.aux'], function(){
         Route::put('atualizar/{id}', 'Admin\Fotos@update@{id}');
         Route::get('destroy/{id}', 'Admin\Fotos@destroy@{id}');
         Route::get('status/{status}/{id}', 'Admin\Fotos@updateStatus@{status}@{id}');
+    });
+
+    Route::group(['prefix' => 'depoimentos/'], function(){
+        Route::get('listar', 'Admin\Depoimento@index');
+        Route::get('novo', 'Admin\Depoimento@create');
+        Route::post('store', 'Admin\Depoimento@store');
+        Route::get('editar/{id}', 'Admin\Depoimento@show@{id}');
+        Route::put('atualizar/{id}', 'Admin\Depoimento@update@{id}');
+        Route::get('destroy/{id}', 'Admin\Depoimento@destroy@{id}');
+        Route::get('status/{status}/{id}', 'Admin\Depoimento@updateStatus@{status}@{id}');
     });
 
     Route::group(['prefix' => 'videos/'], function(){

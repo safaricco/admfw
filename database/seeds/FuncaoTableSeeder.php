@@ -33,5 +33,6 @@ class FuncaoTableSeeder extends Seeder
         /* 20 */ DB::table('funcao')->insert(['nome' => 'Config. Analytics',        'descricao' => 'Permite o usuário a alterar as configurações do google analytics.']);
         /* 21 */ DB::table('funcao')->insert(['nome' => 'Config. Site',             'descricao' => 'Permite o usuário a alterar as configurações do site, como logo, logo do rodapé e nome do site.']);
         /* 22 */ DB::table('funcao')->insert(['nome' => 'Comentários',              'descricao' => 'Permite o usuário a gerenciar os comentários das notícias/postagens do site.']);
+        /* 23 */ DB::table('funcao')->insert(['nome' => 'Depoimentos',              'descricao' => 'Permite o usuário a gerenciar os depoimentos de clientes do site.']);
     }
 }

@@ -34,6 +34,7 @@ class PermissaoPerfilTableSeeder extends Seeder
         DB::table('permissao_perfil')->insert(['id_funcao' => 20, 'id_perfil' => 1, 'id_role' => 2]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 21, 'id_perfil' => 1, 'id_role' => 2]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 22, 'id_perfil' => 1, 'id_role' => 2]);
+        DB::table('permissao_perfil')->insert(['id_funcao' => 23, 'id_perfil' => 1, 'id_role' => 2]);
 
         // ADICIONANDO A PERMISSÃO PARA O PERFIL COLABORADOR
         DB::table('permissao_perfil')->insert(['id_funcao' => 1,  'id_perfil' => 2, 'id_role' => 3]);
@@ -58,5 +59,6 @@ class PermissaoPerfilTableSeeder extends Seeder
         DB::table('permissao_perfil')->insert(['id_funcao' => 20, 'id_perfil' => 2, 'id_role' => 3]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 21, 'id_perfil' => 2, 'id_role' => 3]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 22, 'id_perfil' => 2, 'id_role' => 3]);
+        DB::table('permissao_perfil')->insert(['id_funcao' => 23, 'id_perfil' => 2, 'id_role' => 3]);
     }
 }
