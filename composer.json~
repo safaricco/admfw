@@ -1,0 +1,19 @@
+{
+    "name": "lovera180/fwadm",
+    "description": "The ADM Framework.",
+    "require": {
+        "php": ">=5.5.9",
+		"lovera180/fwadm": "1.0"
+    },
+	"repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:Lovera180/admfw.git"
+        }
+    ],
+    "scripts": {
+        "post-create-project-cmd": [
+            "php artisan key:generate"
+        ]
+    }
+}
