@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class Newsletters extends Controller
 {
@@ -23,6 +24,6 @@ class Newsletters extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/newsletter/listar');
+        return Redirect::back();
     }
 }

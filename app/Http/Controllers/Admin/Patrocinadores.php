@@ -11,6 +11,7 @@ use App\Models\Patrocinador;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Patrocinadores extends Controller
@@ -92,15 +93,19 @@ class Patrocinadores extends Controller
 
             session()->flash('flash_message', 'Patrocinador cadastrada com sucesso!');
 
-            return redirect('admin/patrocinadores/listar');
+            return Redirect::back();
 
         endif;
     }
 
     public function show($id)
     {
-        $idMidia            = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first()->id_midia;
-        $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia))->first();
+
+        if (!empty($idMidia->id_midia))
+            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
+        else
+            $dados['imagens']   = '';
         $dados['put']       = true;
         $dados['dados']     = Patrocinador::findOrFail($id);
         $dados['route']     = 'admin/patrocinadores/atualizar/'.$id;
@@ -185,7 +190,7 @@ class Patrocinadores extends Controller
 
             session()->flash('flash_message', 'Patrocinador alterada com sucesso!');
 
-            return redirect('admin/patrocinadores/editar/'.$id);
+            return Redirect::back();
         endif; 
     }
 
@@ -197,7 +202,7 @@ class Patrocinadores extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/patrocinadores/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -210,6 +215,6 @@ class Patrocinadores extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/patrocinadores/listar');
+        return Redirect::back();
     }
 }

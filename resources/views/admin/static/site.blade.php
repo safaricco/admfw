@@ -264,6 +264,26 @@
                     </li>
                 @endif
 
+                <!-- SERVICOS -->
+                @if(Access::permissao('servicos'))
+                    <li class="{{ Request::is('admin/servicos/*') ? 'active open' : ''  }}">
+                        <a href="javascript:;">
+                            <i class="icon-graduation"></i>
+                            <span class="title">Serviços</span>
+                            <span class="selected"></span>
+                            <span class="arrow open"></span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="{{ Request::is('admin/servicos/listar') ? 'active' : ''  }}">
+                                <a href="{{url('admin/servicos/listar/')}}"> Listar </a>
+                            </li>
+                            <li class="{{ Request::is('admin/servicos/novo') ? 'active' : ''  }}">
+                                <a href="{{url('admin/servicos/novo/')}}"> Novo </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
                 <!-- IMOVEIS -->
                 @if(Access::permissao('imoveis'))
                     <li class="{{ Request::is('admin/imoveis/*') ? 'active open' : ''  }}">

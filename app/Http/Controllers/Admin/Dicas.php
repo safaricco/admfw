@@ -11,6 +11,7 @@ use App\Models\Dica;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -87,7 +88,7 @@ class Dicas extends Controller
 
             session()->flash('flash_message', 'Dica cadastrada com sucesso!');
 
-            return redirect('admin/dicas/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -167,7 +168,7 @@ class Dicas extends Controller
 
             session()->flash('flash_message', 'Dicas alterada com sucesso!');
 
-            return redirect('admin/dicas/editar/'.$id);
+            return Redirect::back();
         endif; 
     }
 
@@ -179,7 +180,7 @@ class Dicas extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/dicas/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -192,6 +193,6 @@ class Dicas extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/dicas/listar');
+        return Redirect::back();
     }
 }

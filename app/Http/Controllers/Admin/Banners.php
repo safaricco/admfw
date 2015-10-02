@@ -11,6 +11,7 @@ use App\Models\Banner;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Banners extends Controller
@@ -91,7 +92,7 @@ class Banners extends Controller
 
             session()->flash('flash_message', 'Banners cadastrada com sucesso!');
 
-            return redirect('admin/banners/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -99,8 +100,12 @@ class Banners extends Controller
 
     public function show($id)
     {
-        $idMidia            = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first()->id_midia;
-        $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia))->first();
+
+        if (!empty($idMidia->id_midia))
+            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
+        else
+            $dados['imagens']   = '';
 
         $dados['put']       = true;
         $dados['dados']     = Banner::findOrFail($id);
@@ -183,7 +188,7 @@ class Banners extends Controller
 
             session()->flash('flash_message', 'Banners alterada com sucesso!');
 
-            return redirect('admin/banners/editar/'.$id);
+            return Redirect::back();
         endif;
     }
 
@@ -195,7 +200,7 @@ class Banners extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/banners/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -208,6 +213,6 @@ class Banners extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/banners/listar');
+        return Redirect::back();
     }
 }

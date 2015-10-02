@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Subcategorias extends Controller
@@ -64,7 +65,7 @@ class Subcategorias extends Controller
 
             session()->flash('flash_message', 'Subcategoria cadastrada com sucesso!');
 
-            return redirect('admin/subcategorias/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -122,7 +123,7 @@ class Subcategorias extends Controller
 
             session()->flash('flash_message', 'Subcategoria alterada com sucesso!');
 
-            return redirect('admin/subcategorias/editar/'.$id);
+            return Redirect::back();
 
         endif;
     }
@@ -139,7 +140,7 @@ class Subcategorias extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/subcategorias/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -152,6 +153,6 @@ class Subcategorias extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/subcategorias/listar');
+        return Redirect::back();
     }
 }

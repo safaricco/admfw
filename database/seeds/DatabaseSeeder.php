@@ -28,6 +28,9 @@ class DatabaseSeeder extends Seeder
         $this->call(ContatoTableSeeder::class);
         $this->call(ConfiguracaoTableSeeder::class);
         $this->call(AnalyticsTableSeeder::class);
+        $this->call(CategoriaTableSeeder::class);
+        $this->call(SubcategoriaTableSeeder::class);
+        $this->call(StatusComentarioSeeder::class);
 
         Model::reguard();
     }

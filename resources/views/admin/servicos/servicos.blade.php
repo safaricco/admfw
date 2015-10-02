@@ -6,10 +6,10 @@
         <div class="page-content">
             <div class="page-head">
                 <div class="page-title">
-                    <h1>Produtos</h1>
+                    <h1>Serviços</h1>
                 </div>
             </div>
-            @include('admin.static.breadcrumb', ['active' => 'Produtos', 'retorno' => 'produtos/listar'])
+            @include('admin.static.breadcrumb', ['active' => 'Serviços', 'retorno' => 'servicos/listar'])
             <div class="row">
                 <div class="col-md-12">
 
@@ -18,7 +18,7 @@
                     <div class="portlet box blue">
                         <div class="portlet-title">
                             <div class="caption">
-                                <i class="fa fa-edit"></i> Listando Produtos
+                                <i class="fa fa-edit"></i> Listando Serviços
                             </div>
                         </div>
                         <div class="portlet-body">
@@ -26,7 +26,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="btn-group">
-                                            <a href="{{url('admin/produtos/novo')}}">
+                                            <a href="{{url('admin/servicos/novo')}}">
                                                 <button id="sample_editable_1_new" class="btn green">
                                                     Novo <i class="fa fa-plus"></i>
                                                 </button>
@@ -52,19 +52,19 @@
                             </thead>
 
                             <tbody>
-                                @foreach($produtos as $produto)
+                                @foreach($servicos as $servico)
                                     <tr>
-                                        <td> {{$produto->ref}} </td>
-                                        <td> {{$produto->nome}} </td>
-                                        <td> {{str_limit($produto->descricao, 200) }} </td>
-                                        <td> {{date('d/m/Y', strtotime($produto->created_at)) }} </td>
+                                        <td> {{$servico->ref}} </td>
+                                        <td> {{$servico->nome}} </td>
+                                        <td> {!! str_limit($servico->descricao, 200) !!} </td>
+                                        <td> {{date('d/m/Y', strtotime($servico->created_at)) }} </td>
                                         <td>
-                                            <a href="{{ url('admin/produtos/editar/' . $produto->id) }}"><i class="fa fa-edit"></i> Editar </a>
-                                            <a href="{{ url('admin/produtos/destroy/' . $produto->id) }}"><i class="fa fa-trash"></i>  Excluir </a>
-                                            @if ($produto->status == 1)
-                                                <a href="{{ url('/admin/produtos/status/0/' . $produto->id_produto) }}"><i class="fa fa-remove"></i> Desativar</a>
+                                            <a href="{{ url('admin/servicos/editar/' . $servico->id_servico) }}"><i class="fa fa-edit"></i> Editar </a>
+                                            <a href="{{ url('admin/servicos/destroy/' . $servico->id_servico) }}"><i class="fa fa-trash"></i>  Excluir </a>
+                                            @if ($servico->status == 1)
+                                                <a href="{{ url('/admin/servicos/status/0/' . $servico->id_servico) }}"><i class="fa fa-remove"></i> Desativar</a>
                                             @else
-                                                <a href="{{ url('/admin/produtos/status/1/' . $produto->id_produto) }}"><i class="fa fa-remove"></i> Ativar</a>
+                                                <a href="{{ url('/admin/servicos/status/1/' . $servico->id_servico) }}"><i class="fa fa-remove"></i> Ativar</a>
                                             @endif
                                         </td>
                                     </tr>

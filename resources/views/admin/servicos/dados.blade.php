@@ -6,10 +6,10 @@
         <div class="page-content">
             <div class="page-head">
                 <div class="page-title">
-                    <h1>Produtos</h1>
+                    <h1>Serviços</h1>
                 </div>
             </div>
-            @include('admin.static.breadcrumb', ['active' => 'Produtos', 'retorno' => 'produtos/listar'])
+            @include('admin.static.breadcrumb', ['active' => 'Serviços', 'retorno' => 'servicos/listar'])
             <div class="row">
                 <div class="col-md-12">
 
@@ -18,7 +18,7 @@
                     <div class="portlet box blue">
                         <div class="portlet-title">
                             <div class="caption">
-                                <i class="fa fa-gift"></i> Novo Produto
+                                <i class="fa fa-gift"></i> Novo Serviço
                             </div>
                         </div>
                         <div class="portlet-body form">
@@ -33,7 +33,7 @@
                                     <div class="form-group">
                                         <div class="col-md-12">
                                             <label>Nome</label>
-                                            <input name="nome" type="text" class="form-control" placeholder="Nome do Produto" value="{{ $dados->nome or old('nome') }}">
+                                            <input name="nome" type="text" class="form-control" placeholder="Nome do serviço" value="{{ $dados->nome or old('nome') }}">
                                         </div>
                                     </div>
      
@@ -53,7 +53,7 @@
 
                                         <div class="col-md-6">
                                             <label>Subcategoria</label>
-                                            <select name="idSubcategoria" class="form-control">
+                                            <select name="id_subcategoria" class="form-control">
 
                                                 @foreach($subcategorias as $sub)
 
@@ -77,16 +77,16 @@
                                         </div>
                                     </div>
 
-                                    @if(!empty($dados->imagem))
+                                    @if(!empty($destacada->imagem_destacada))
                                         <div class="form-group">
                                             <div class="row">
                                                 <label class="control-label">Imagem Destacada</label>
                                                 <div class="col-xs-6 col-md-3">
                                                     <div class="thumbnail">
                                                         <div class="thumbnail">
-                                                            <img src="{{ url('uploads/produtos/' . $dados->imagem) }}" class="img-responsive form-control">
+                                                            <img src="{{ url('uploads/servicos/' . $destacada->imagem_destacada) }}" class="img-responsive form-control">
                                                         </div>
-                                                        <a href="{{ url('uploads/produtos/' . $dados->imagem) }}" download="{{ url('uploads/produtos/' . $dados->imagem) }}" class="btn btn-default" role="button" title="Download"><i class="fa fa-download"></i></a>
+                                                        <a href="{{ url('uploads/servicos/' . $destacada->imagem_destacada) }}" download="{{ url('uploads/servicos/' . $destacada->imagem_destacada) }}" class="btn btn-default" role="button" title="Download"><i class="fa fa-download"></i></a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -101,7 +101,7 @@
 
                                     <hr>
 
-                                    @include('admin.static.field-img-atual', ['tipo' => 'produtos'])
+                                    @include('admin.static.field-img-atual', ['tipo' => 'servicos'])
 
                                     <div class="form-group">
                                         <label class="control-label">Imagens</label>

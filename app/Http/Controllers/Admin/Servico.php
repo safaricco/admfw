@@ -4,52 +4,49 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Midia;
 use App\Models\Multimidia;
-use App\Models\Produtos;
+use App\Models\Servicos;
 use App\Models\Subcategoria;
 use App\Models\TipoMidia;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
-class Produto extends Controller
+
+class Servico extends Controller
 {
-    public $tipo_midia      = 12;
-    public $tipo_categoria  = 1;
-
+    public $tipo_midia      = 13;
+    public $tipo_categoria  = 2;
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return view('admin/produtos/produtos', ['produtos' => Produtos::all()]);
+        return view('admin/servicos/servicos', ['servicos' => Servicos::all()]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
         $dados['put']           = false;
         $dados['dados']         = '';
-        $dados['route']         = 'admin/produtos/store';
+        $dados['route']         = 'admin/servicos/store';
         $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        return view('admin/produtos/dados', $dados);
+        return view('admin/servicos/dados', $dados);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -57,22 +54,22 @@ class Produto extends Controller
             'nome'              => 'required|string|unique:produtos',
             'descricao'         => 'string',
             'ref'               => 'string|unique:produtos',
-            'idSubcategoria'    => 'required|integer',
-            'imagens[]'         => 'image|mimes:jpg,png,jpeg,gif',
-            'imagem'            => 'image|mimes:jpg,png,jpeg,gif'
+            'id_subcategoria'   => 'required|integer',
+            'imagem'            => 'image|mimes:jpg,png,jpeg,gif',
+            'imagens[]'         => 'image|mimes:jpg,png,jpeg,gif'
         ]);
         if ($validation->fails()) :
-            return redirect('admin/produtos/novo')->withErrors($validation)->withInput();
+            return redirect('admin/servicos/novo')->withErrors($validation)->withInput();
         else :
 
-            $produto = new Produtos();
+            $servico = new Servicos();
 
-            $produto->nome              = $request->nome;
-            $produto->descricao         = $request->descricao;
-            $produto->ref               = $request->ref;
-            $produto->idSubcategoria    = $request->idSubcategoria;
+            $servico->nome              = $request->nome;
+            $servico->descricao         = $request->descricao;
+            $servico->ref               = $request->ref;
+            $servico->id_subcategoria   = $request->id_subcategoria;
 
-            $produto->save();
+            $servico->save();
 
             // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO NÃO ESTÁ CORROMPIDO
             if ($request->hasFile('imagens')) :
@@ -82,7 +79,7 @@ class Produto extends Controller
                 // CRIANDO O REGISTRO PAI NA TABELA MIDIA
                 $midia                      = new Midia();
                 $midia->id_tipo_midia       = $this->tipo_midia;
-                $midia->id_registro_tabela  = $produto->id_produto;
+                $midia->id_registro_tabela  = $servico->id_servico;
                 $midia->descricao           = $nomeTipo . ' criado automaticamente';
                 $midia->save();
 
@@ -90,7 +87,7 @@ class Produto extends Controller
                 if ($request->hasFile('imagem')) :
                     $nomeOrigDest   = $request->file('imagem')->getClientOriginalName();                                                // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
 
-                    $nomeDestacada  = md5(uniqid($nomeOrigDest)) . '.' . $request->file('imagem')->getClientOriginalExtension();   // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
+                    $nomeDestacada       = md5(uniqid($nomeOrigDest)) . '.' . $request->file('imagem')->getClientOriginalExtension();   // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
 
                     $request->file('imagem')->move('uploads/' . $nomeTipo, $nomeDestacada);                                             // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
 
@@ -99,6 +96,7 @@ class Produto extends Controller
                     $imgDest->save();
                 endif;
 
+                // CONTINUANDO COM OUTRAS IMAGENS
                 foreach ($request->file('imagens') as $img) :
 
                     $nomeOriginal   = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
@@ -132,44 +130,44 @@ class Produto extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first())->first();
 
-        if (!empty($idMidia->id_midia)) :
-            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
-            $dados['destacada'] = Midia::findOrFail($idMidia->id_midia);
+        if (!empty($idMidia)) :
+            $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+            $dados['destacada'] = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first();
         else :
             $dados['imagens']   = '';
             $dados['destacada'] = '';
         endif;
 
         $dados['put']           = true;
-        $dados['dados']         = Produtos::findOrFail($id);
-        $dados['route']         = 'admin/produtos/atualizar/'.$id;
+        $dados['dados']         = Servicos::findOrFail($id);
+        $dados['route']         = 'admin/servicos/atualizar/'.$id;
         $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        return view('admin/produtos/dados', $dados);
+        return view('admin/servicos/dados', $dados);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  Request  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
@@ -177,22 +175,22 @@ class Produto extends Controller
             'nome'              => 'required|string',
             'descricao'         => 'string',
             'ref'               => 'string',
-            'idSubcategoria'    => 'required|integer',
+            'id_subcategoria'   => 'required|integer',
             'imagens[]'         => 'image|mimes:jpg,png,jpeg,gif',
             'imagem'            => 'image|mimes:jpg,png,jpeg,gif'
         ]);
         if ($validation->fails()) :
-            return redirect('admin/produtos/editar/'.$id)->withErrors($validation)->withInput();
+            return redirect('admin/servicos/novo')->withErrors($validation)->withInput();
         else :
 
-            $produto = Produtos::findOrFail($id);
+            $servico = Servicos::findOrFail($id);
 
-            $produto->nome              = $request->nome;
-            $produto->descricao         = $request->descricao;
-            $produto->ref               = $request->ref;
-            $produto->idSubcategoria    = $request->idSubcategoria;
+            $servico->nome              = $request->nome;
+            $servico->descricao         = $request->descricao;
+            $servico->ref               = $request->ref;
+            $servico->id_subcategoria   = $request->id_subcategoria;
 
-            $produto->save();
+            $servico->save();
 
             // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO NÃO ESTÁ CORROMPIDO
             if ($request->hasFile('imagens')) :
@@ -204,7 +202,7 @@ class Produto extends Controller
                     // CRIANDO O REGISTRO PAI NA TABELA MIDIA
                     $midia                      = new Midia();
                     $midia->id_tipo_midia       = $this->tipo_midia;
-                    $midia->id_registro_tabela  = $produto->id_produto;
+                    $midia->id_registro_tabela  = $servico->id_servico;
                     $midia->descricao           = $nomeTipo . ' criado automaticamente com o banner';
                     $midia->save();
 
@@ -248,7 +246,7 @@ class Produto extends Controller
 
                     $midia                      = new Midia();
                     $midia->id_tipo_midia       = $this->tipo_midia;
-                    $midia->id_registro_tabela  = $produto->id_produto;
+                    $midia->id_registro_tabela  = $servico->id_servico;
                     $midia->descricao           = $nomeTipo . ' criado automaticamente com o banner';
                     $midia->save();
 
@@ -301,13 +299,13 @@ class Produto extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         Midia::excluir($id);
 
-        Produtos::destroy($id);
+        Servicos::destroy($id);
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
@@ -316,7 +314,7 @@ class Produto extends Controller
 
     public function updateStatus($status, $id)
     {
-        $dado         = Produtos::findOrFail($id);
+        $dado         = Servicos::findOrFail($id);
 
         $dado->status = $status;
 

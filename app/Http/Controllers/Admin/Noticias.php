@@ -140,22 +140,25 @@ class Noticias extends Controller
 
             session()->flash('flash_message', 'Noticia cadastrada com sucesso!');
 
-            return redirect('admin/noticias/listar');
+            return Redirect::back();
 
         endif;
     }
 
     public function show($id)
     {
-        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia))->first();
+        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first())->first();
 
-        if (!empty($idMidia->id_midia))
+        if (!empty($idMidia->id_midia)) :
             $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
-        else
+            $dados['destacada'] = Midia::findOrFail($idMidia->id_midia);
+        else :
             $dados['imagens']   = '';
+            $dados['destacada'] = '';
+        endif;
 
         $dados['put']           = true;
-        $dados['subcategorias'] = Subcategoria::subs(3);
+        $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
         $dados['dados']         = Noticia::findOrFail($id);
         $dados['route']         = 'admin/noticias/atualizar/'.$id;
 
@@ -274,7 +277,7 @@ class Noticias extends Controller
             
             session()->flash('flash_message', 'Noticia alterada com sucesso!');
 
-            return redirect('admin/noticias/editar/'.$id);
+            return Redirect::back();
         endif; 
     }
 
@@ -287,7 +290,7 @@ class Noticias extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/noticias/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -300,6 +303,6 @@ class Noticias extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/noticias/listar');
+        return Redirect::back();
     }
 }

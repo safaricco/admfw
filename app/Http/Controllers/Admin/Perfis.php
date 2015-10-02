@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Perfis extends Controller
@@ -80,7 +81,7 @@ class Perfis extends Controller
 
             session()->flash('flash_message', 'Registro gravado com sucesso!');
 
-            return redirect('admin/configuracoes/perfis/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -152,7 +153,7 @@ class Perfis extends Controller
 
             session()->flash('flash_message', 'Registro alterado com sucesso!');
 
-            return redirect('admin/configuracoes/perfis/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -182,7 +183,7 @@ class Perfis extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso!');
 
-        return redirect('admin/configuracoes/perfis/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -195,6 +196,6 @@ class Perfis extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/configuracoes/perfis/listar');
+        return Redirect::back();
     }
 }

@@ -77,7 +77,7 @@ class Contato extends Controller
 
             session()->flash('flash_message', 'Registro atualizado com sucesso!');
 
-            return redirect('admin/configuracoes/contato');
+            return Redirect::back();
 
         endif;
     }

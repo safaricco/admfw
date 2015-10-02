@@ -128,6 +128,16 @@ Route::group(['prefix' => 'admin/', 'middleware' => 'auth.aux'], function(){
         Route::get('status/{status}/{id}', 'Admin\Produtos@updateStatus@{status}@{id}');
     });
 
+    Route::group(['prefix' => 'servicos/'], function(){
+        Route::get('listar', 'Admin\Servico@index');
+        Route::get('novo', 'Admin\Servico@create');
+        Route::post('store', 'Admin\Servico@store');
+        Route::get('editar/{id}', 'Admin\Servico@show@{id}');
+        Route::put('atualizar/{id}', 'Admin\Servico@update@{id}');
+        Route::get('destroy/{id}', 'Admin\Servico@destroy@{id}');
+        Route::get('status/{status}/{id}', 'Admin\Servico@updateStatus@{status}@{id}');
+    });
+
     Route::group(['prefix' => 'imoveis/'], function(){
         Route::get('listar', 'Admin\Imoveis@index');
         Route::get('novo', 'Admin\Imoveis@create');

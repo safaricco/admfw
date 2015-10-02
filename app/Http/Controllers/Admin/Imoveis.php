@@ -10,11 +10,13 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Imoveis extends Controller
 {
-    public $tipo_midia = 9;     // CÓDIGO DO TIPO DA MIDIA DA TABELA TIPO_MIDIA
+    public $tipo_midia      = 9;     // CÓDIGO DO TIPO DA MIDIA DA TABELA TIPO_MIDIA
+    public $tipo_categoria  = 4;
 
     /**
      * Display a listing of the resource.
@@ -175,7 +177,7 @@ class Imoveis extends Controller
 
             session()->flash('flash_message', 'Registro gravado com sucesso!');
 
-            return redirect('admin/imoveis/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -188,8 +190,12 @@ class Imoveis extends Controller
      */
     public function show($id)
     {
-        $idMidia            = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first()->id_midia;
-        $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia))->first();
+
+        if (!empty($idMidia->id_midia))
+            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
+        else
+            $dados['imagens']   = '';
         $dados['put']       = true;
         $dados['dados']     = Imovel::findOrFail($id);
         $dados['route']     = 'admin/imoveis/atualizar/'.$id;
@@ -316,7 +322,7 @@ class Imoveis extends Controller
                     // CRIANDO O REGISTRO PAI NA TABELA MIDIA
                     $midia                      = new Midia();
                     $midia->id_tipo_midia       = $this->tipo_midia;
-                    $midia->id_registro_tabela  = $imovel->id_noticia;
+                    $midia->id_registro_tabela  = $imovel->id_imovel;
                     $midia->descricao           = $nomeTipo . ' criado automaticamente';
                     $midia->save();
 
@@ -351,7 +357,7 @@ class Imoveis extends Controller
 
             session()->flash('flash_message', 'Registro gravado com sucesso!');
 
-            return redirect('minhaConta/anuncios/imoveis/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -370,7 +376,7 @@ class Imoveis extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/imoveis/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -383,6 +389,6 @@ class Imoveis extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/imoveis/listar');
+        return Redirect::back();
     }
 }

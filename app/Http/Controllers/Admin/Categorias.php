@@ -9,6 +9,7 @@ use App\Models\Categoria;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Categorias extends Controller
@@ -50,7 +51,7 @@ class Categorias extends Controller
 
             session()->flash('flash_message', 'Categoria cadastrada com sucesso!');
 
-            return redirect('admin/categorias/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -93,7 +94,7 @@ class Categorias extends Controller
 
             session()->flash('flash_message', 'Categoria alterada com sucesso!');
 
-            return redirect('admin/categorias/listar');
+            return Redirect::back();
 
         endif; 
 
@@ -106,7 +107,7 @@ class Categorias extends Controller
 
         session()->flash('flash_message', 'Registro apagado com sucesso');
 
-        return redirect('admin/categorias/listar');
+        return Redirect::back();
     }
 
     public function updateStatus($status, $id)
@@ -119,6 +120,6 @@ class Categorias extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/categorias/listar');
+        return Redirect::back();
     }
 }

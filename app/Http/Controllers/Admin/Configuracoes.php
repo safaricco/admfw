@@ -6,6 +6,7 @@ use App\Models\Configuracao;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Configuracoes extends Controller
@@ -78,7 +79,7 @@ class Configuracoes extends Controller
 
             session()->flash('flash_message', 'Registro atualizado com sucesso!');
 
-            return redirect('admin/configuracoes/site');
+            return Redirect::back();
 
         endif;
     }

@@ -14,6 +14,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Usuarios extends Controller
@@ -99,7 +100,7 @@ class Usuarios extends Controller
 
             session()->flash('flash_message', 'Registro gravado com sucesso!');
 
-            return redirect('admin/configuracoes/usuarios/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -188,7 +189,7 @@ class Usuarios extends Controller
 
             session()->flash('flash_message', 'Registro atualizado com sucesso!');
 
-            return redirect('admin/configuracoes/usuarios/listar');
+            return Redirect::back();
 
         endif;
     }
@@ -218,7 +219,7 @@ class Usuarios extends Controller
 
             session()->flash('flash_message', 'Dados alterados com sucesso!');
 
-            return redirect('admin/perfil/'.$id);
+            return Redirect::back();
 
         endif;
     }
@@ -258,7 +259,7 @@ class Usuarios extends Controller
 
             session()->flash('flash_message', 'Dados alterados com sucesso! Enviamos uma confirmação para o seu e-mail, verifique seu e-mail');
 
-            return redirect('admin/perfil/'.$id);
+            return Redirect::back();
 
         endif;
     }
@@ -289,7 +290,7 @@ class Usuarios extends Controller
 
             session()->flash('flash_message', 'Senha alterada com sucesso!');
 
-            return redirect('admin/configuracoes/usuarios/perfil/editar/'.$id);
+            return Redirect::back();
 
         endif;
     }
@@ -304,6 +305,6 @@ class Usuarios extends Controller
 
         session()->flash('flash_message', 'Status alterado com sucesso!');
 
-        return redirect('admin/configuracoes/usuarios/listar');
+        return Redirect::back();
     }
 }

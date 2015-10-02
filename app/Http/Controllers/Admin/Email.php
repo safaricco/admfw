@@ -6,6 +6,7 @@ use App\Models\Emails;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class Email extends Controller
@@ -58,7 +59,7 @@ class Email extends Controller
 
             session()->flash('flash_message', 'Registro atualizado com sucesso!');
 
-            return redirect('admin/configuracoes/email');
+            return Redirect::back();
 
         endif;
     }

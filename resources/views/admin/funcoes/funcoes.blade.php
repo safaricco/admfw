@@ -32,18 +32,23 @@
 
                             <tbody>
                                 @foreach($modulos as $modulo)
-                                 <tr>
-                                    <td> {{ $modulo->nome }} </td>
-                                    <td>
-{{--                                        <a href="{{ url('admin/configuracoes/modulos/editar/' . $modulo->id_funcao) }}"><i class="fa fa-edit"></i> Editar </a>--}}
-                                        {{--<a href="{{ url('admin/configuracoes/modulos/destroy/' . $modulo->id_funcao) }}"><i class="fa fa-trash"></i> Excluir </a>--}}
-                                        @if ($modulo->status == 1)
-                                            <a href="{{ url('/admin/configuracoes/modulos/status/0/' . $modulo->id_funcao) }}"><i class="fa fa-ban"></i> Desativar</a>
-                                        @else
-                                            <a href="{{ url('/admin/configuracoes/modulos/status/1/' . $modulo->id_funcao) }}"><i class="fa fa-check-circle-o"></i> Ativar</a>
-                                        @endif
-                                     </td>
-                                 </tr>
+
+                                    @if ($modulo->status == 1)
+
+                                        <tr class="success">
+                                            <td> {{ $modulo->nome }} </td>
+                                            <td><a href="{{ url('/admin/configuracoes/modulos/status/0/' . $modulo->id_funcao) }}"><i class="fa fa-ban"></i> Desativar</a></td>
+                                        </tr>
+
+                                    @else
+
+                                        <tr class="danger">
+                                            <td> {{ $modulo->nome }} </td>
+                                            <td><a href="{{ url('/admin/configuracoes/modulos/status/1/' . $modulo->id_funcao) }}"><i class="fa fa-check-circle-o"></i> Ativar</a></td>
+                                        </tr>
+
+                                    @endif
+
                                 @endforeach
                             </tbody>
 
