@@ -498,7 +498,7 @@
 
     <div class="page-footer">
     <div class="page-footer-inner">
-         2015 &copy; Administrador. <a href="" title="" target="_blank">safaricomunicacao.com</a>
+         2015 &copy; {{ $confsite->nome_site }}. <a href="" title="" target="_blank">safaricomunicacao.com</a>
     </div>
     <div class="scroll-to-top">
         <i class="icon-arrow-up"></i>
