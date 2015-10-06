@@ -14,6 +14,7 @@ class CreateFuncaoTable extends Migration
     {
         Schema::create('funcao', function (Blueprint $table) {
             $table->increments('id_funcao');
+            $table->string('acesso');
             $table->string('nome');
             $table->string('descricao')->nullable();
             $table->integer('status')->default(1);

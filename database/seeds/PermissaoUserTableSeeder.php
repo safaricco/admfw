@@ -35,5 +35,6 @@ class PermissaoUserTableSeeder extends Seeder
         DB::table('permissao_user')->insert(['id_funcao' => 22, 'id_user' => 2, 'id_role' => 1]);
         DB::table('permissao_user')->insert(['id_funcao' => 23, 'id_user' => 2, 'id_role' => 1]);
         DB::table('permissao_user')->insert(['id_funcao' => 24, 'id_user' => 2, 'id_role' => 1]);
+        DB::table('permissao_user')->insert(['id_funcao' => 25, 'id_user' => 2, 'id_role' => 1]);
     }
 }

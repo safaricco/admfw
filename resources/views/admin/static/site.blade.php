@@ -446,14 +446,14 @@
                     <ul class="sub-menu">
 
                         {{--SITE--}}
-                        @if(Access::permissao('config. site'))
+                        @if(Access::permissao('site'))
                             <li class="{{ Request::is('admin/configuracoes/site') ? 'active' : ''  }}">
                                 <a href="{{url('admin/configuracoes/site')}}"> Site </a>
                             </li>
                         @endif
 
                         {{--EMIAL--}}
-                        @if(Access::permissao('config. de email'))
+                        @if(Access::permissao('email'))
                             <li class="{{ Request::is('admin/configuracoes/email') ? 'active' : ''  }}">
                                 <a href="{{url('admin/configuracoes/email')}}"> E-mail </a>
                             </li>
@@ -467,7 +467,7 @@
                         @endif
 
                         {{--ANALYTICS--}}
-                        @if(Access::permissao('config. analytics'))
+                        @if(Access::permissao('analytics'))
                             <li class="{{ Request::is('admin/configuracoes/analytics') ? 'active' : ''  }}">
                                 <a href="{{url('admin/configuracoes/analytics')}}"> Analytics </a>
                             </li>

@@ -82,7 +82,7 @@
                                     {{--</div>--}}
                                 {{--</div>--}}
                             {{--</div>--}}
-                            <table class="table table-striped table-hover table-bordered" id="sample_editable_1">
+                            <table class="table table-striped table-hover table-bordered" id="sample_1">
                             <thead>
                             <tr>
                                 <th class="col-md-1"> Status </th>

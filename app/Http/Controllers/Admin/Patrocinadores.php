@@ -57,37 +57,9 @@ class Patrocinadores extends Controller
 
             $patrocinadores->save();
 
-            // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO NÃO ESTÁ CORROMPIDO
             if ($request->hasFile('imagens')) :
 
-                $nomeTipo = TipoMidia::findOrFail($this->tipo_midia)->descricao;                                                // A VARIÁVEL $nomeTipo CONTÉM O NOME DO TIPO DA MIDIA E SERÁ USADA COMO NOME DA PASTA DENTRO DA PASTA UPLOADS
-
-                // CRIANDO O REGISTRO PAI NA TABELA MIDIA
-                $midia                      = new Midia();
-                $midia->id_tipo_midia       = $this->tipo_midia;
-                $midia->id_registro_tabela  = $patrocinadores->id_patrocinador;
-                $midia->descricao           = $nomeTipo . ' criado automaticamente';
-                $midia->save();
-
-                foreach ($request->file('imagens') as $img) :
-
-                    $nomeOriginal   = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                    $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $img->getClientOriginalExtension();    // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                    $img->move('uploads/' . $nomeTipo, $novoNome);                                              // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                    $imagem         = new Multimidia();                                                         // GRAVANDO NA TABELA MULTIMIDIA
-
-                    // PREPARANDO DADOS PARA GRAVAR NA TABELA MULTIMIDIA
-                    $imagem->id_midia   = $midia->id_midia;
-                    $imagem->imagem     = $novoNome;
-                    $imagem->ordem      = $request->ordem;
-                    $imagem->video      = $request->video;
-
-                    $imagem->save();
-
-                endforeach;
+                Midia::uploadMultiplo($this->tipo_midia, $patrocinadores->id_patrocinador);
 
             endif;
 
@@ -143,48 +115,9 @@ class Patrocinadores extends Controller
 
             $patrocinadores->save();
 
-            // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO NÃO ESTÁ CORROMPIDO
             if ($request->hasFile('imagens')) :
 
-                $nomeTipo   = TipoMidia::findOrFail($this->tipo_midia)->descricao;                                                // A VARIÁVEL $nomeTipo CONTÉM O NOME DO TIPO DA MIDIA E SERÁ USADA COMO NOME DA PASTA DENTRO DA PASTA UPLOADS
-
-                $midia      = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first();
-
-                if (count($midia) < 1) :
-
-                    // CRIANDO O REGISTRO PAI NA TABELA MIDIA
-                    $midia                      = new Midia();
-                    $midia->id_tipo_midia       = $this->tipo_midia;
-                    $midia->id_registro_tabela  = $patrocinadores->id_patrocinador;
-                    $midia->descricao           = $nomeTipo . ' criado automaticamente';
-                    $midia->save();
-
-                endif;
-
-                foreach ($request->file('imagens') as $img) :
-
-                    $nomeOriginal   = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                    $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $img->getClientOriginalExtension();    // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                    $img->move('uploads/' . $nomeTipo, $novoNome);                                              // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                    $imagem         = Multimidia::where('id_midia', $midia->id_midia);
-
-                    if (isset($imagem))
-                        $imagem = new Multimidia();
-
-                    // GRAVANDO NA TABELA MULTIMIDIA
-
-                    // PREPARANDO DADOS PARA GRAVAR NA TABELA MULTIMIDIA
-                    $imagem->id_midia   = $midia->id_midia;
-                    $imagem->imagem     = $novoNome;
-                    $imagem->ordem      = $request->ordem;
-                    $imagem->video      = $request->video;
-
-                    $imagem->save();
-
-                endforeach;
+                Midia::uploadMultiplo($this->tipo_midia, $patrocinadores->id_patrocinador);
 
             endif;
 
@@ -196,7 +129,7 @@ class Patrocinadores extends Controller
 
     public function destroy($id)
     {
-        Midia::excluir($id);
+        Midia::excluir($id, $this->tipo_midia);
 
         Patrocinador::destroy($id);
 

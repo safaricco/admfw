@@ -38,7 +38,7 @@ class Acesso extends Model
 
     public static function getFuncao($like)
     {
-        $fun = Funcao::where('nome', $like)->where('status', 1)->get();
+        $fun = Funcao::where('acesso', $like)->where('status', 1)->get();
         $id = 0;
         foreach($fun as $fu) :
             $id = $fu->id_funcao;

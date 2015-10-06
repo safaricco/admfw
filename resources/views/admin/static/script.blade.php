@@ -10,8 +10,11 @@
 <script src="{{asset('assets/admin/global/plugins/uniform/jquery.uniform.min.js')}}" type="text/javascript"></script>
 <script src="{{asset('assets/admin/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}" type="text/javascript"></script>
 <!-- END CORE PLUGINS -->
-<!-- BEGIN PAGE LEVEL PLUGINS -->
+
+
 <script type="text/javascript" src="{{asset('assets/admin/global/plugins/select2/select2.min.js')}}"></script>
+{{--<script type="text/javascript" src="{{asset('assets/admin/global/plugins/datatables/media/js/jquery.dataTables.min.js')}}"></script>--}}
+{{--<script type="text/javascript" src="{{asset('assets/admin/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')}}"></script>--}}
 <script type="text/javascript" src="{{asset('assets/admin/global/plugins/jquery-mixitup/jquery.mixitup.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/admin/global/plugins/fancybox/source/jquery.fancybox.pack.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/admin/global/plugins/bootstrap-wysihtml5/wysihtml5-0.3.0.js')}}"></script>
@@ -19,6 +22,12 @@
 <script type="text/javascript" src="{{asset('assets/admin/global/plugins/bootstrap-markdown/lib/markdown.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/admin/global/plugins/bootstrap-markdown/js/bootstrap-markdown.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/admin/global/plugins/bootstrap-summernote/summernote.min.js')}}"></script>
+
+<script type="text/javascript" src="{{asset('assets/admin/global/plugins/datatables/media/js/jquery.dataTables.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/admin/global/plugins/datatables/extensions/TableTools/js/dataTables.tableTools.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/admin/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/admin/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/admin/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')}}"></script>
 
 
 <script src="{{asset('assets/admin/global/scripts/metronic.js')}}" type="text/javascript"></script>
@@ -29,6 +38,7 @@
 <script src="{{asset('assets/admin/admin/pages/scripts/portfolio.js')}}"></script>
 <script src="{{asset('assets/admin/admin/pages/scripts/components-editors.js')}}"></script>
 <script src="{{asset('assets/admin/admin/pages/scripts/profile.js')}}"></script>
+<script src="{{asset('assets/admin/admin/pages/scripts/table-advanced.js')}}"></script>
 <!-- END PAGE LEVEL SCRIPTS -->
 
 <script>
@@ -74,21 +84,25 @@
 </script>
 
 <script>
-jQuery(document).ready(function() {  
-    setTimeout(function() {
+    jQuery(document).ready(function() {
+        setTimeout(function() {
 
-        $('.alert').fadeOut();
+            $('.alert').fadeOut();
 
-    }, 3000);
+        }, 3000);
 
-    // initiate layout and plugins
-    Metronic.init(); // init metronic core components
-    Layout.init(); // init current layout
-    QuickSidebar.init(); // init quick sidebar
-    Demo.init(); // init demo features
-    ComponentsEditors.init();
-    FormSamples.init();
-    Profile.init();
-    Portfolio.init();
-});
+        // initiate layout and plugins
+        Metronic.init(); // init metronic core components
+        Layout.init(); // init current layout
+        QuickSidebar.init(); // init quick sidebar
+        Demo.init(); // init demo features
+
+        @if(Request::is('*/listar'))
+            TableAdvanced.init();
+        @endif
+        ComponentsEditors.init();
+        FormSamples.init();
+        Profile.init();
+        Portfolio.init();
+    });
 </script>

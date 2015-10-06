@@ -71,51 +71,15 @@ class Servico extends Controller
 
             $servico->save();
 
-            // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO NÃO ESTÁ CORROMPIDO
+            if ($request->hasFile('imagem')) :
+
+                Midia::uploadDestacada($this->tipo_midia, $servico->id_servico);
+
+            endif;
+
             if ($request->hasFile('imagens')) :
 
-                $nomeTipo = TipoMidia::findOrFail($this->tipo_midia)->descricao;                                                // A VARIÁVEL $nomeTipo CONTÉM O NOME DO TIPO DA MIDIA E SERÁ USADA COMO NOME DA PASTA DENTRO DA PASTA UPLOADS
-
-                // CRIANDO O REGISTRO PAI NA TABELA MIDIA
-                $midia                      = new Midia();
-                $midia->id_tipo_midia       = $this->tipo_midia;
-                $midia->id_registro_tabela  = $servico->id_servico;
-                $midia->descricao           = $nomeTipo . ' criado automaticamente';
-                $midia->save();
-
-                // IMAGEM DESTACADA
-                if ($request->hasFile('imagem')) :
-                    $nomeOrigDest   = $request->file('imagem')->getClientOriginalName();                                                // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                    $nomeDestacada       = md5(uniqid($nomeOrigDest)) . '.' . $request->file('imagem')->getClientOriginalExtension();   // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                    $request->file('imagem')->move('uploads/' . $nomeTipo, $nomeDestacada);                                             // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                    $imgDest = Midia::findOrFail($midia->id_midia);
-                    $imgDest->imagem_destacada = $nomeDestacada;
-                    $imgDest->save();
-                endif;
-
-                // CONTINUANDO COM OUTRAS IMAGENS
-                foreach ($request->file('imagens') as $img) :
-
-                    $nomeOriginal   = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                    $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $img->getClientOriginalExtension();    // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                    $img->move('uploads/' . $nomeTipo, $novoNome);                                              // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                    $imagem         = new Multimidia();                                                         // GRAVANDO NA TABELA MULTIMIDIA
-
-                    // PREPARANDO DADOS PARA GRAVAR NA TABELA MULTIMIDIA
-                    $imagem->id_midia   = $midia->id_midia;
-                    $imagem->imagem     = $novoNome;
-                    $imagem->ordem      = $request->ordem;
-                    $imagem->video      = $request->video;
-
-                    $imagem->save();
-
-                endforeach;
+                Midia::uploadMultiplo($this->tipo_midia, $servico->id_servico);
 
             endif;
 
@@ -192,99 +156,15 @@ class Servico extends Controller
 
             $servico->save();
 
-            // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO NÃO ESTÁ CORROMPIDO
+            if ($request->hasFile('imagem')) :
+
+                Midia::uploadDestacada($this->tipo_midia, $servico->id_servico);
+
+            endif;
+
             if ($request->hasFile('imagens')) :
 
-                $mid = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first();
-                if (empty($mid)) :
-                    $nomeTipo = TipoMidia::findOrFail($this->tipo_midia)->descricao;                                                // A VARIÁVEL $nomeTipo CONTÉM O NOME DO TIPO DA MIDIA E SERÁ USADA COMO NOME DA PASTA DENTRO DA PASTA UPLOADS
-
-                    // CRIANDO O REGISTRO PAI NA TABELA MIDIA
-                    $midia                      = new Midia();
-                    $midia->id_tipo_midia       = $this->tipo_midia;
-                    $midia->id_registro_tabela  = $servico->id_servico;
-                    $midia->descricao           = $nomeTipo . ' criado automaticamente com o banner';
-                    $midia->save();
-
-                    // IMAGEM DESTACADA
-                    if ($request->hasFile('imagem')) :
-                        $nomeOrigDest   = $request->file('imagem')->getClientOriginalName();                                                // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                        $nomeDestacada  = md5(uniqid($nomeOrigDest)) . '.' . $request->file('imagem')->getClientOriginalExtension();   // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                        $request->file('imagem')->move('uploads/' . $nomeTipo, $nomeDestacada);                                             // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                        $imgDest                    = Midia::findOrFail($midia->id_midia);
-                        $imgDest->imagem_destacada  = $nomeDestacada;
-                        $imgDest->save();
-
-                    endif;
-
-                    foreach ($request->file('imagens') as $img) :
-
-                        $nomeOriginal   = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                        $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $img->getClientOriginalExtension();    // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                        $img->move('uploads/' . $nomeTipo, $novoNome);                                              // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                        $imagem         = new Multimidia();                                                         // GRAVANDO NA TABELA MULTIMIDIA
-
-                        // PREPARANDO DADOS PARA GRAVAR NA TABELA MULTIMIDIA
-                        $imagem->id_midia   = $midia->id_midia;
-                        $imagem->imagem     = $novoNome;
-                        $imagem->ordem      = $request->ordem;
-                        $imagem->video      = $request->video;
-
-                        $imagem->save();
-
-                    endforeach;
-
-                else :
-
-                    $nomeTipo = TipoMidia::findOrFail($this->tipo_midia)->descricao;                                                // A VARIÁVEL $nomeTipo CONTÉM O NOME DO TIPO DA MIDIA E SERÁ USADA COMO NOME DA PASTA DENTRO DA PASTA UPLOADS
-
-                    $midia                      = new Midia();
-                    $midia->id_tipo_midia       = $this->tipo_midia;
-                    $midia->id_registro_tabela  = $servico->id_servico;
-                    $midia->descricao           = $nomeTipo . ' criado automaticamente com o banner';
-                    $midia->save();
-
-
-                    // IMAGEM DESTACADA
-                    if ($request->hasFile('imagem')) :
-                        $nomeOrigDest   = $request->file('imagem')->getClientOriginalName();                                                // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                        $nomeDestacada  = md5(uniqid($nomeOrigDest)) . '.' . $request->file('imagem')->getClientOriginalExtension();   // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                        $request->file('imagem')->move('uploads/' . $nomeTipo, $nomeDestacada);                                             // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                        $imgDest                    = Midia::findOrFail($midia->id_midia);
-                        $imgDest->imagem_destacada  = $nomeDestacada;
-                        $imgDest->save();
-
-                    endif;
-
-                    foreach ($request->file('imagens') as $img) :
-
-                        $nomeOriginal   = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
-
-                        $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $img->getClientOriginalExtension();    // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                        $img->move('uploads/' . $nomeTipo, $novoNome);                                              // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                        $imagem         = new Multimidia();                                                         // GRAVANDO NA TABELA MULTIMIDIA
-
-                        // PREPARANDO DADOS PARA GRAVAR NA TABELA MULTIMIDIA
-                        $imagem->id_midia   = $midia->id_midia;
-                        $imagem->imagem     = $novoNome;
-                        $imagem->ordem      = $request->ordem;
-                        $imagem->video      = $request->video;
-
-                        $imagem->save();
-
-                    endforeach;
-                endif;
+                Midia::uploadMultiplo($this->tipo_midia, $servico->id_servico);
 
             endif;
 
@@ -303,7 +183,7 @@ class Servico extends Controller
      */
     public function destroy($id)
     {
-        Midia::excluir($id);
+        Midia::excluir($id, $this->tipo_midia);
 
         Servicos::destroy($id);
 
