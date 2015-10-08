@@ -36,5 +36,7 @@ class FuncaoTableSeeder extends Seeder
         /* 23 */ DB::table('funcao')->insert(['acesso' => 'depoimentos',    'nome' => 'Depoimentos',              'descricao' => 'Permite o usuário a gerenciar os depoimentos de clientes do site.']);
         /* 24 */ DB::table('funcao')->insert(['acesso' => 'servicos',       'nome' => 'Serviços',                 'descricao' => 'Permite o usuario a criar, apagar e alterar os serviços prestados pela empresa.']);
         /* 25 */ DB::table('funcao')->insert(['acesso' => 'multimidia',     'nome' => 'Multimidia',               'descricao' => 'Permite o usuario a exluir uma única imagem por vez.']);
+        /* 26 */ DB::table('funcao')->insert(['acesso' => 'ajuda',          'nome' => 'Ajuda',                    'descricao' => 'Portal de apoio ao usuário.']);
+        /* 27 */ DB::table('funcao')->insert(['acesso' => 'help',           'nome' => 'Help',                     'descricao' => 'Permite ao usuário acessar o menu de ajuda.']);
     }
 }

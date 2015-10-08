@@ -40,7 +40,7 @@
                                         <td> {{$news->email}} </td>
                                         <td> {{date('d/m/Y', strtotime($news->created_at))}} </td>
                                         <td>
-                                            <a href="{{ url('admin/newsletter/destroy/' . $news->id_newsletter) }}"><i class="fa fa-trash"></i>  Excluir </a>
+                                            <a href="{{ url('admin/newsletter/destroy/' . $news->id_newsletter) }}"class="btn btn-icon-only red" title="Excluir"><i class="fa fa-trash"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -44,6 +44,11 @@
         <!-- BEGIN TOP NAVIGATION MENU -->
         <div class="top-menu">
             <ul class="nav navbar-nav pull-right">
+                <li class="dropdown dropdown-quick-sidebar-toggler">
+                    <a href="{{ url('admin/help/listar') }}" title="Ajuda" class="dropdown-toggle">
+                        <i class="icon-question"></i>
+                    </a>
+                </li>
                 <li class="dropdown dropdown-user">
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                         <img alt="" class="img-circle" src="{{ url('assets/admin/admin/pages/media/sem-imagem.png') }}"/>
@@ -53,14 +58,31 @@
                     <ul class="dropdown-menu dropdown-menu-default">
                         <li>
                             <a href="{{ url('admin/configuracoes/usuarios/perfil/editar/' . Auth::user()->id) }}">
-                                <i class="icon-user"></i> Meu Perfil </a>
+                                <i class="icon-user"></i> Meu Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">
+                                <i class="icon-star"></i> Sobre
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('admin/help/listar') }}" title="Ajuda">
+                                <i class="icon-question"></i> Ajuda
+                            </a>
                         </li>
                         <li class="divider"></li>
                         <li>
                             <a href="{{ url('auth/logout') }}">
-                                <i class="icon-key"></i> Sair </a>
+                                <i class="icon-logout"></i> Sair </a>
                         </li>
                     </ul>
+                </li>
+
+                <li class="dropdown dropdown-quick-sidebar-toggler">
+                    <a href="{{ url('auth/logout') }}" class="dropdown-toggle">
+                        <i class="icon-logout"></i>
+                    </a>
                 </li>
             </ul>
         </div>
@@ -368,7 +390,7 @@
                 @if(Access::permissao('depoimentos'))
                     <li class="{{ Request::is('admin/depoimentos/*') ? 'active' : ''  }}">
                         <a href="javascript:;">
-                            <i class="icon-question"></i>
+                            <i class="icon-notebook"></i>
                             <span class="title">Depoimentos</span>
                             <span class="selected"></span>
                             <span class="arrow open"></span>
@@ -434,6 +456,48 @@
                         </ul>
                     </li>
                 @endif
+
+                <!-- AJUDA CADASTRO -->
+                @if(Access::permissao('ajuda'))
+                    <li class="{{ Request::is('admin/ajuda/*') ? 'active open' : ''  }}">
+                        <a href="javascript:;">
+                            <i class="icon-question"></i>
+                            <span class="title">Ajuda Cadastro</span>
+                            <span class="selected"></span>
+                            <span class="arrow open"></span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="{{ Request::is('admin/ajuda/listar') ? 'active' : ''  }}">
+                                <a href="{{url('admin/ajuda/listar/')}}"> Listar </a>
+                            </li>
+                            <li class="{{ Request::is('admin/ajuda/novo') ? 'active' : ''  }}">
+                                <a href="{{url('admin/ajuda/novo/')}}"> Novo </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
+
+                {{--@if(!isset($ajuda))--}}
+                    <!-- AJUDA -->
+                    <li class="{{ Request::is('admin/help/*') ? 'active open' : ''  }}">
+                        <a href="javascript:;">
+                            <i class="icon-question"></i>
+                            <span class="title">Ajuda</span>
+                            <span class="selected"></span>
+                            <span class="arrow open"></span>
+                        </a>
+                        <ul class="sub-menu">
+
+                            @foreach($ajuda as $item)
+                                <li>
+                                    <a href="{{ url('admin/help/visualizar/'.$item->id_ajuda) }}"> {{ $item->titulo }} </a>
+                                </li>
+                            @endforeach
+
+                        </ul>
+                    </li>
+                {{--@endif--}}
 
                 <!-- CONFIGURACOES -->
                 <li class="{{ Request::is('admin/configuracoes/*') ? 'active open' : ''  }}">
@@ -542,10 +606,10 @@
     </div>
     <div class="scroll-to-top">
         <i class="icon-arrow-up"></i>
+
     </div>
 </div>
 
-@include('admin.static.script')
-
+    @include('admin.static.script')
 </body>
 </html>

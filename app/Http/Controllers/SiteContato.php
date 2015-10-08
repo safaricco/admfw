@@ -22,7 +22,7 @@ class SiteContato extends Controller
     public function index()
     {
         $dados['dados']     = Contatos::find(1);
-        return view('contato', $dados);
+        return view('site.contato', $dados);
     }
 
     /**
