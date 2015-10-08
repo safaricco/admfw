@@ -211,6 +211,23 @@ Route::group(['prefix' => 'admin/', 'middleware' => 'auth.aux'], function(){
         Route::get('status/{status}/{id}', 'Admin\Banners@updateStatus@{status}@{id}');
     });
 
+    Route::group(['prefix' => 'ajuda/'], function(){
+        Route::get('listar', 'Admin\Help@index');
+        Route::get('novo', 'Admin\Help@create');
+        Route::post('store', 'Admin\Help@store');
+        Route::get('editar/{id}', 'Admin\Help@edit@{id}');
+        Route::get('visualizar/{id}', 'Admin\Help@show@{id}');
+        Route::put('atualizar/{id}', 'Admin\Help@update@{id}');
+        Route::get('destroy/{id}', 'Admin\Help@destroy@{id}');
+        Route::post('destroyFoto', 'Admin\Help@destroyFoto');
+        Route::get('status/{status}/{id}', 'Admin\Help@updateStatus@{status}@{id}');
+    });
+
+    Route::group(['prefix' => 'help/'], function(){
+        Route::get('visualizar/{id}', 'Admin\Help@show@{id}');
+        Route::get('listar', 'Admin\Help@listar');
+    });
+
     Route::group(['prefix' => 'configuracoes/'], function(){
 
         Route::group(['prefix' => 'site/'], function(){

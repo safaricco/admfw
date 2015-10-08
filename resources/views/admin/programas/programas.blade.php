@@ -57,12 +57,12 @@
                                         <td> {{$programa->texto}} </td>
                                         <td> {{$programa->codigo}} </td>
                                         <td>
-                                            <a href="{{ url('admin/programas/editar/' . $programa->id_programa) }}"><i class="fa fa-edit"></i> Editar </a>
-                                            <a href="{{ url('admin/programas/destroy/' . $programa->id_programa) }}"><i class="fa fa-trash"></i>  Excluir </a>
+                                            <a href="{{ url('admin/programas/editar/' . $programa->id_programa) }}" class="btn btn-icon-only yellow" title="Editar"><i class="fa fa-edit"></i></a>
+                                            <a href="{{ url('admin/programas/destroy/' . $programa->id_programa) }}" class="btn btn-icon-only red" title="Excluir"><i class="fa fa-trash"></i></a>
                                             @if ($programa->status == 1)
-                                                <a href="{{ url('/admin/programas/status/0/' . $programa->id_programa) }}"><i class="fa fa-remove"></i> Desativar</a>
+                                                <a href="{{ url('/admin/programas/status/0/' . $programa->id_programa) }}" class="btn btn-icon-only green" title="Ativo"><i class="fa fa-thumbs-o-up"></i></a>
                                             @else
-                                                <a href="{{ url('/admin/programas/status/1/' . $programa->id_programa) }}"><i class="fa fa-remove"></i> Ativar</a>
+                                                <a href="{{ url('/admin/programas/status/1/' . $programa->id_programa) }}" class="btn btn-icon-only grey-cascade" title="Inativo"><i class="fa fa-thumbs-o-down"></i></a>
                                             @endif
                                         </td>
                                     </tr>

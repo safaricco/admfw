@@ -18,8 +18,9 @@ class SiteEventos extends Controller
      */
     public function index()
     {
-        $dados['dados'] = Evento::all();
-        return view('eventos', $dados);
+        $dados['eventos']   = Evento::where('status', '=', 1)->get();
+        $dados['imagens']   = Midia::where('id_tipo_midia', '=', $this->tipo_midia)->get();
+        return view('site/eventos', $dados);
     }
 
     /**
@@ -30,9 +31,17 @@ class SiteEventos extends Controller
      */
     public function show($id)
     {
-        $idMidia            = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first()->id_midia;
-        $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
-        $dados['dados']     = Evento::findOrFail($id);
-        return view('evento', $dados);
+        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first())->first();
+
+        if (!empty($idMidia)) :
+            $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+        else :
+            $dados['imagens']   = '';
+        endif;
+
+
+        $dados['destacada']     = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first();
+        $dados['evento']        = Evento::findOrFail($id);
+        return view('site/eventos-page', $dados);
     }
 }

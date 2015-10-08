@@ -18,9 +18,7 @@ class SiteSobre extends Controller
      */
     public function index()
     {
-        $idMidia            = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first()->id_midia;
-        $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
-        $dados['dados']     = Sobres::all();
-        return view('sobre', $dados);
+        $dados['dados']     = Sobres::findOrFail(1);
+        return view('site/sobre', $dados);
     }
 }

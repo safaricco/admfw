@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categoria;
 use App\Models\Midia;
 use App\Models\Noticia;
 use Illuminate\Http\Request;
@@ -18,8 +19,10 @@ class SiteNoticias extends Controller
      */
     public function index()
     {
-        $dados['dados'] = Noticia::all();
-        return view('noticias', $dados);
+        $noticia            = Noticia::where('status', '=', 1)->paginate(3);
+        $dados['imagens']   = Midia::where('id_tipo_midia', '=', $this->tipo_midia)->get();
+        $dados['noticias']  = $noticia;
+        return view('site/noticias', $dados);
     }
 
     /**
@@ -39,11 +42,28 @@ class SiteNoticias extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug, $id)
     {
-        $idMidia            = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first()->id_midia;
-        $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
-        $dados['dados']     = Noticia::findOrFail($id);
-        return view('noticia', $dados);
+        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first())->first();
+
+        if (!empty($idMidia)) :
+            $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+        else :
+            $dados['imagens']   = '';
+        endif;
+
+
+        $dados['destacada']     = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first();
+        $dados['blog']          = Noticia::where('slug',$slug)->first();
+        return view('site/noticias-page', $dados);
+    }
+
+    public function categoria($idCategoria)
+    {
+        $noticia            = Categoria::find($idCategoria)->noticias()->paginate(3);
+        $dados['imagens']   = Midia::where('id_tipo_midia', '=', $this->tipo_midia)->get();
+        $dados['noticias']  = $noticia;
+
+        return view('site/noticias', $dados);
     }
 }

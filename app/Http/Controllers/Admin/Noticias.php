@@ -69,6 +69,7 @@ class Noticias extends Controller
 
             $images = $dom->getElementsByTagName('img');
 
+            // TODO fazer gravar as imagens do editor nas tabelas midia e multimia
             // foreach <img> in the submited message
             foreach($images as $img) :
                 $src = $img->getAttribute('src');
@@ -176,6 +177,7 @@ class Noticias extends Controller
 
             $images = $dom->getElementsByTagName('img');
 
+            // TODO fazer autlalizar as imagens do editor nas tabelas midia e multimia
             // foreach <img> in the submited message
             foreach($images as $img) :
                 $src = $img->getAttribute('src');

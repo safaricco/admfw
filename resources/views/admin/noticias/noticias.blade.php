@@ -60,12 +60,12 @@
                                         <td> {{$noticia->destaque}} </td>
                                         <td> {{date('d/m/Y', strtotime($noticia->data))}} </td>
                                         <td>
-                                            <a href="{{ url('admin/noticias/editar/' . $noticia->id_noticia) }}"><i class="fa fa-edit"></i> Editar </a>
-                                            <a href="{{ url('admin/noticias/destroy/' . $noticia->id_noticia) }}"><i class="fa fa-trash"></i>  Excluir </a>
+                                            <a href="{{ url('admin/noticias/editar/' . $noticia->id_noticia) }}" class="btn btn-icon-only yellow" title="Editar"><i class="fa fa-edit"></i></a>
+                                            <a href="{{ url('admin/noticias/destroy/' . $noticia->id_noticia) }}" class="btn btn-icon-only red" title="Excluir"><i class="fa fa-trash"></i></a>
                                             @if ($noticia->status == 1)
-                                                <a href="{{ url('/admin/noticias/status/0/' . $noticia->id_noticia) }}"><i class="fa fa-remove"></i> Desativar</a>
+                                                <a href="{{ url('/admin/noticias/status/0/' . $noticia->id_noticia) }}" class="btn btn-icon-only green" title="Ativo"><i class="fa fa-thumbs-o-up"></i></a>
                                             @else
-                                                <a href="{{ url('/admin/noticias/status/1/' . $noticia->id_noticia) }}"><i class="fa fa-remove"></i> Ativar</a>
+                                                <a href="{{ url('/admin/noticias/status/1/' . $noticia->id_noticia) }}" class="btn btn-icon-only grey-cascade" title="Inativo"><i class="fa fa-thumbs-o-down"></i></a>
                                             @endif
                                         </td>
                                     </tr>

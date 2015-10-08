@@ -46,14 +46,13 @@
                                             <td>{{ $user->perfil }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td>
-                                                <a href="{{ url('/admin/configuracoes/usuarios/editar/' . $user->id) }}"><i class="fa fa-edit"></i> Editar</a>
-
+                                                <a href="{{ url('/admin/configuracoes/usuarios/editar/' . $user->id) }}" class="btn btn-icon-only yellow" title="Editar"><i class="fa fa-edit"></i></a>
                                                 @if ($user->id <> Auth::user()->id)
 
                                                     @if ($user->status == 1)
-                                                        <a href="{{ url('/admin/configuracoes/usuarios/status/0/' . $user->id) }}"><i class="fa fa-remove"></i> Desativar</a>
+                                                        <a href="{{ url('/admin/configuracoes/usuarios/status/0/' . $user->id) }}" class="btn btn-icon-only green" title="Ativo"><i class="fa fa-thumbs-o-up"></i></a>
                                                     @else
-                                                        <a href="{{ url('/admin/configuracoes/usuarios/status/1/' . $user->id) }}"><i class="fa fa-remove"></i> Ativar</a>
+                                                        <a href="{{ url('/admin/configuracoes/usuarios/status/1/' . $user->id) }}" class="btn btn-icon-only grey-cascade" title="Inativo"><i class="fa fa-thumbs-o-down"></i></a>
                                                     @endif
 
                                                 @endif
