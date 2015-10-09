@@ -11,25 +11,26 @@ class TipoMidiaTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('tipo_midia')->insert(['descricao' => 'banners']);
-        DB::table('tipo_midia')->insert(['descricao' => 'categorias']);
-        DB::table('tipo_midia')->insert(['descricao' => 'subcategorias']);
-        DB::table('tipo_midia')->insert(['descricao' => 'contato']);
-        DB::table('tipo_midia')->insert(['descricao' => 'dicas']);
-        DB::table('tipo_midia')->insert(['descricao' => 'download']);
-        DB::table('tipo_midia')->insert(['descricao' => 'eventos']);
-        DB::table('tipo_midia')->insert(['descricao' => 'fotos']);
-        DB::table('tipo_midia')->insert(['descricao' => 'imoveis']);
-        DB::table('tipo_midia')->insert(['descricao' => 'noticias']);
-        DB::table('tipo_midia')->insert(['descricao' => 'parceiros']);
-        DB::table('tipo_midia')->insert(['descricao' => 'produtos']);
-        DB::table('tipo_midia')->insert(['descricao' => 'servicos']);
-        DB::table('tipo_midia')->insert(['descricao' => 'programas']);
-        DB::table('tipo_midia')->insert(['descricao' => 'users']);
-        DB::table('tipo_midia')->insert(['descricao' => 'sobre']);
-        DB::table('tipo_midia')->insert(['descricao' => 'patrocinadores']);
-        DB::table('tipo_midia')->insert(['descricao' => 'videos']);
-        DB::table('tipo_midia')->insert(['descricao' => 'empregos']);
-        DB::table('tipo_midia')->insert(['descricao' => 'depoimentos']);
+        /* 01 */ DB::table('tipo_midia')->insert(['descricao' => 'banners']);
+        /* 02 */ DB::table('tipo_midia')->insert(['descricao' => 'categorias']);
+        /* 03 */ DB::table('tipo_midia')->insert(['descricao' => 'subcategorias']);
+        /* 04 */ DB::table('tipo_midia')->insert(['descricao' => 'contato']);
+        /* 05 */ DB::table('tipo_midia')->insert(['descricao' => 'dicas']);
+        /* 06 */ DB::table('tipo_midia')->insert(['descricao' => 'download']);
+        /* 07 */ DB::table('tipo_midia')->insert(['descricao' => 'eventos']);
+        /* 08 */ DB::table('tipo_midia')->insert(['descricao' => 'fotos']);
+        /* 09 */ DB::table('tipo_midia')->insert(['descricao' => 'imoveis']);
+        /* 10 */ DB::table('tipo_midia')->insert(['descricao' => 'noticias']);
+        /* 11 */ DB::table('tipo_midia')->insert(['descricao' => 'parceiros']);
+        /* 12 */ DB::table('tipo_midia')->insert(['descricao' => 'produtos']);
+        /* 13 */ DB::table('tipo_midia')->insert(['descricao' => 'servicos']);
+        /* 14 */ DB::table('tipo_midia')->insert(['descricao' => 'programas']);
+        /* 15 */ DB::table('tipo_midia')->insert(['descricao' => 'users']);
+        /* 16 */ DB::table('tipo_midia')->insert(['descricao' => 'sobre']);
+        /* 17 */ DB::table('tipo_midia')->insert(['descricao' => 'patrocinadores']);
+        /* 18 */ DB::table('tipo_midia')->insert(['descricao' => 'videos']);
+        /* 19 */ DB::table('tipo_midia')->insert(['descricao' => 'empregos']);
+        /* 20 */ DB::table('tipo_midia')->insert(['descricao' => 'depoimentos']);
+        /* 21 */ DB::table('tipo_midia')->insert(['descricao' => 'help']);
     }
 }

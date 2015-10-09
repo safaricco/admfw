@@ -110,7 +110,7 @@
                 <!-- DASHBOARD -->
                 <li class="{{ Request::is('admin/dashboard') ? 'active' : ''  }}">
                     <a href="{{ url('admin/dashboard') }}">
-                        <i class="icon-bar-chart"></i>
+                        <i class="icon-speedometer"></i>
                         <span class="title"> Dashboard </span>
                         <span class="selected"></span>
                     </a>
@@ -502,7 +502,7 @@
                 <!-- CONFIGURACOES -->
                 <li class="{{ Request::is('admin/configuracoes/*') ? 'active open' : ''  }}">
                     <a href="javascript:;">
-                        <i class="icon-wrench"></i>
+                        <i class="icon-question"></i>
                         <span class="title">Configurações</span>
                         <span class="selected"></span>
                         <span class="arrow open"></span>

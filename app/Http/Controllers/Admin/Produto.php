@@ -101,16 +101,8 @@ class Produto extends Controller
      */
     public function show($id)
     {
-        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first())->first();
-
-        if (!empty($idMidia->id_midia)) :
-            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
-            $dados['destacada'] = Midia::findOrFail($idMidia->id_midia);
-        else :
-            $dados['imagens']   = '';
-            $dados['destacada'] = '';
-        endif;
-
+        $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
+        $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
         $dados['put']           = true;
         $dados['dados']         = Produtos::findOrFail($id);
         $dados['route']         = 'admin/produtos/atualizar/'.$id;

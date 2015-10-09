@@ -61,6 +61,11 @@
                                         <label> Título Notícia </label>
                                         <input name="titulo" type="text" class="form-control" placeholder="Título da Notícia" value="{{ $dados->titulo or old('titulo') }}">
                                     </div>
+
+                                    <div class="form-group">
+                                        <label> Resumo Notícia </label>
+                                        <input name="resumo" type="text" class="form-control" placeholder="Resumo da Notícia" value="{{ $dados->resumo or old('resumo') }}">
+                                    </div>
      
                                     <div class="form-group">
                                         <label> Texto Notícia </label>
@@ -88,10 +93,32 @@
                                         </select>
                                     </div>
 
+                                    @if(!empty($midia))
+                                        <div class="form-group">
+                                            <label class="control-label">Imagens atuais:</label>
+                                            <div class="row">
+                                                <div class="col-xs-6 col-md-3">
+                                                    <div class="thumbnail">
+                                                        <div class="thumbnail">
+                                                            <img src="{{ url('thumb/348/null/noticias/' . $midia->imagem_destacada) }}" class="img-responsive">
+                                                        </div>
+                                                        <a data-rel="fancybox-button" href="{{ url('uploads/noticias/' . $midia->imagem_destacada) }}" class="btn btn-primary fancybox-button" role="button" title="Visualizar"><i class="fa fa-eye"></i></a>
+                                                        <a href="{{ url('uploads/noticias/' . $midia->imagem_destacada) }}" download="{{ url('uploads/noticias/' . $midia->imagem_destacada) }}" class="btn btn-default" role="button" title="Download"><i class="fa fa-download"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div class="form-group">
+                                        <label class="control-label">Imagem destacada</label>
+                                        <input type="file" value="{{ old('imagem') }}" name="imagem">
+                                    </div>
+
                                     @include('admin.static.field-img-atual', ['tipo' => 'noticias'])
 
                                     <div class="form-group">
-                                        <label class="control-label">Imagens</label>
+                                        <label class="control-label">Galeria</label>
                                         <input type="file" value="{{ old('imagens[]') }}" name="imagens[]" multiple>
                                     </div>
                                 </div>
