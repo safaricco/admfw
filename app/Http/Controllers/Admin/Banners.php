@@ -50,7 +50,7 @@ class Banners extends Controller
             return redirect('admin/banners/novo')->withErrors($validation)->withInput();
         else :
 
-//            try {
+            try {
 
                 $banner = new Banner();
 
@@ -69,13 +69,14 @@ class Banners extends Controller
 
                 session()->flash('flash_message', 'Banners cadastrada com sucesso!');
 
-//            } catch (\Exception $e) {
+            } catch (\Exception $e) {
 
+                dd($banner);
 //                LogR::exception();
-//                dd(Request::capture()->server());
+//                dd($e->getPrevious());
 //                session()->flash('flash_message', $e);
 
-//            }
+            }
 
             return Redirect::back();
 
