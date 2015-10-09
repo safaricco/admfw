@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Request;
+use Intervention\Image\Facades\Image;
+use PhpParser\Node\Expr\BinaryOp\Mul;
 
 
 class Midia extends Model
@@ -25,9 +28,76 @@ class Midia extends Model
         return $this->hasMany('App\Models\Multimidia', 'id_midia');
     }
 
+    protected static function getIdMidia($tipo_midia, $idRegistro)
+    {
+        return collect(Midia::where('id_registro_tabela', $idRegistro)->where('id_tipo_midia', $tipo_midia)->first())->first();
+    }
+
+    public static function imagens($tipo_midia, $idRegistro)
+    {
+        $idMidia = Midia::getIdMidia($tipo_midia, $idRegistro);
+
+        if (!empty($idMidia))
+            return Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+        else
+            return '';
+    }
+
+    public static function destacada($tipo_midia, $idRegistro)
+    {
+        $idMidia = Midia::getIdMidia($tipo_midia, $idRegistro);
+
+        if (!empty($idMidia))
+            return Midia::findOrFail($idMidia);
+        else
+            return '';
+    }
+
+    public static function uploadTextarea($texto, $tipo_midia)
+    {
+        $nomeTipo   = TipoMidia::findOrFail($tipo_midia)->descricao;
+
+        // gravando imagem do corpo da noticia
+        $dom = new \DOMDocument();
+        $dom->loadHtml($texto, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        $images = $dom->getElementsByTagName('img');
+
+        // foreach <img> in the submited message
+        foreach($images as $img) :
+
+            $src = $img->getAttribute('src');
+
+            // if the img source is 'data-url'
+            if(preg_match('/data:image/', $src)) :
+
+                // get the mimetype
+                preg_match('/data:image\/(?<mime>.*?)\;/', $src, $groups);
+                $mimetype = $groups['mime'];
+
+                // Generating a random filename
+                $filename = md5(uniqid());
+                $filepath = "uploads/" . $nomeTipo . "/" . $filename.'.'.$mimetype;
+
+                // @see http://image.intervention.io/api/
+                $image = Image::make($src)
+                    ->encode($mimetype, 100) 	// encode file to the specified mimetype
+                    ->save(public_path($filepath));
+
+                $new_src = asset($filepath);
+                $img->removeAttribute('src');
+                $img->setAttribute('src', $new_src);
+
+            endif;
+
+        endforeach;
+
+        return $dom->saveHTML();
+    }
+
     public static function excluir($idRegistro, $tipo_midia)
     {
-        $hasMidia      = collect(Midia::where('id_registro_tabela', $idRegistro)->where('id_tipo_midia', $tipo_midia)->get());
+        $hasMidia       = collect(Midia::where('id_registro_tabela', $idRegistro)->where('id_tipo_midia', $tipo_midia)->get());
 
         if($hasMidia->contains('id_registro_tabela', $idRegistro)) :
 
@@ -110,43 +180,56 @@ class Midia extends Model
 
         if (!empty($midia)) :
 
-            $multi             = new Multimidia();
+           $multi           = new Multimidia();
 
-            $multi->id_midia   = $midia->id_midia;
-            $multi->imagem     = $novoNome;
+           $multi->id_midia = $midia->id_midia;
+           $multi->imagem   = $novoNome;
 
-            if (!empty($dados)) :
-                $multi->ordem  = $dados->multimicia_ordem;
-                $multi->video  = $dados->multimicia_video;
-            endif;
+           if (!empty($dados)) :
+               $multi->ordem = $dados->multimicia_ordem;
+               $multi->video = $dados->multimicia_video;
+           endif;
 
-            $multi->save();
+           $multi->save();
+
 
         else :
 
-            // gravando dados na tabela midia
-            $midia                      = new Midia();
-            $midia->id_tipo_midia       = $tipo_midia;
-            $midia->id_registro_tabela  = $idRegistro;
-            $midia->descricao           = $nomeTipo . ' criado automaticamente';
 
-            if (!empty($dados))
-                $midia->ordem           = $dados->midia_ordem;
+                // gravando dados na tabela midia
+                $midia                      = new Midia();
+                $midia->id_tipo_midia       = $tipo_midia;
+                $midia->id_registro_tabela  = $idRegistro;
+                $midia->descricao           = $nomeTipo . ' criado automaticamente';
 
-            $midia->save();
+                if (!empty($dados))
+                    $midia->ordem           = $dados->midia_ordem;
 
-            // gravando dados na tabela multimidia
-            $multi                      = new Multimidia();
+                $midia->save();
 
-            $multi->id_midia            = $midia->id_midia;
-            $multi->imagem              = $novoNome;
+//            });
 
-            if (!empty($dados)) :
-                $multi->ordem           = $dados->multimicia_ordem;
-                $multi->video           = $dados->multimicia_video;
-            endif;
+//            try {
 
-            $multi->save();
+                // gravando dados na tabela multimidia
+                $multi                      = new Multimidia();
+
+                $multi->id_midia            = $midia->id_midia;
+                $multi->imagem              = $novoNome;
+
+                if (!empty($dados)) :
+                    $multi->ordem           = $dados->multimicia_ordem;
+                    $multi->video           = $dados->multimicia_video;
+                endif;
+
+                $multi->save();
+
+
+//            } catch (\Exception $e) {
+
+//                dd($e);
+
+//            }
 
         endif;
     }

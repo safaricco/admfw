@@ -16,9 +16,13 @@ class CreateNoticiasTable extends Migration
             $table->increments('id_noticia');
             $table->integer('id_subcategoria')->unsigned();
             $table->string('titulo',255);
+            $table->string('resumo')->nullable();
             $table->text('texto');
             $table->date('data');
             $table->string('destaque')->nullable();
+            $table->string('autor')->nullable();
+            $table->string('tags')->nullable();
+            $table->string('slug')->nullable();
             $table->integer('status')->default(1);
             $table->timestamps();
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Helps;
+use App\Models\Midia;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -14,6 +15,7 @@ use PhpParser\Node\Expr\BinaryOp\Mul;
 
 class Help extends Controller
 {
+    public $tipo_midia = 21;
     /**
      * Display a listing of the resource.
      *
@@ -67,47 +69,11 @@ class Help extends Controller
             return redirect('admin/ajuda/novo')->withErrors($validation)->withInput();
         else :
 
-            $ajuda = new Helps();
+            $ajuda          = new Helps();
 
             $ajuda->titulo  = $request->titulo;
             $ajuda->icone   = $request->icone;
-
-            // gravando imagem do corpo da noticia
-            $dom = new \DOMDocument();
-            $dom->loadHtml($request->texto, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            // TODO fazer gravar as imagens do editor nas tabelas midia e multimia
-            // foreach <img> in the submited message
-            foreach($images as $img) :
-                $src = $img->getAttribute('src');
-
-                // if the img source is 'data-url'
-                if(preg_match('/data:image/', $src)) :
-
-                    // get the mimetype
-                    preg_match('/data:image\/(?<mime>.*?)\;/', $src, $groups);
-                    $mimetype = $groups['mime'];
-
-                    // Generating a random filename
-                    $filename = md5(uniqid());
-                    $filepath = "uploads/ajuda/".$filename.'.'.$mimetype;
-
-                    // @see http://image.intervention.io/api/
-                    $image = Image::make($src)
-                        ->encode($mimetype, 100) 	// encode file to the specified mimetype
-                        ->save(public_path($filepath));
-
-                    $new_src = asset($filepath);
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', $new_src);
-
-                endif;
-
-            endforeach;
-
-            $ajuda->texto = $dom->saveHTML();
+            $ajuda->texto   = Midia::uploadTextarea($request->texto, $this->tipo_midia);
 
             $ajuda->save();
 
@@ -168,45 +134,7 @@ class Help extends Controller
 
             $ajuda->titulo  = $request->titulo;
             $ajuda->icone   = $request->icone;
-
-
-            // gravando imagem do corpo da noticia
-            $dom = new \DOMDocument();
-            $dom->loadHtml($request->texto, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            // TODO fazer autlalizar as imagens do editor nas tabelas midia e multimia
-            // foreach <img> in the submited message
-            foreach($images as $img) :
-                $src = $img->getAttribute('src');
-
-                // if the img source is 'data-url'
-                if(preg_match('/data:image/', $src)) :
-
-                    // get the mimetype
-                    preg_match('/data:image\/(?<mime>.*?)\;/', $src, $groups);
-                    $mimetype = $groups['mime'];
-
-                    // Generating a random filename
-                    $filename = md5(uniqid());
-                    $filepath = "uploads/ajuda/".$filename.'.'.$mimetype;
-
-                    // @see http://image.intervention.io/api/
-                    $image = Image::make($src)
-                        ->encode($mimetype, 100) 	// encode file to the specified mimetype
-                        ->save(public_path($filepath));
-
-                    $new_src = asset($filepath);
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', $new_src);
-
-                endif;
-
-            endforeach;
-
-            $ajuda->texto = $dom->saveHTML();
-
+            $ajuda->texto   = Midia::uploadTextarea($request->texto, $this->tipo_midia);
             $ajuda->save();
 
             session()->flash('flash_message', 'Item de ajuda alterado com sucesso!');

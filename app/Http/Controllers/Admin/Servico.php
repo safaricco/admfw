@@ -98,16 +98,8 @@ class Servico extends Controller
      */
     public function show($id)
     {
-        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first())->first();
-
-        if (!empty($idMidia)) :
-            $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
-            $dados['destacada'] = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first();
-        else :
-            $dados['imagens']   = '';
-            $dados['destacada'] = '';
-        endif;
-
+        $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
+        $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
         $dados['put']           = true;
         $dados['dados']         = Servicos::findOrFail($id);
         $dados['route']         = 'admin/servicos/atualizar/'.$id;

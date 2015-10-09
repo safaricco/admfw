@@ -47,10 +47,13 @@ class Noticias extends Controller
         $validation = Validator::make($request->all(), [
             'id_subcategoria'   => 'required|integer',
             'titulo'            => 'required|string',
+            'resumo'            => 'string',
             'texto'             => 'required|string',
             'destaque'          => 'required|string',
+            'tags'              => 'string',
             'data'              => 'date',
-            'imagens[]'         => 'mimes:jpeg,bmp,png,jpg'
+            'imagens[]'         => 'mimes:jpeg,bmp,png,jpg',
+            'imagem'            => 'mimes:jpeg,bmp,png,jpg'
         ]);
 
         if ($validation->fails()) :
@@ -61,48 +64,13 @@ class Noticias extends Controller
 
             $noticia->id_subcategoria   = $request->id_subcategoria;
             $noticia->titulo            = $request->titulo;
-//            $noticia->texto             = $request->texto;
-
-            // gravando imagem do corpo da noticia
-            $dom = new \DOMDocument();
-            $dom->loadHtml($request->texto, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            // TODO fazer gravar as imagens do editor nas tabelas midia e multimia
-            // foreach <img> in the submited message
-            foreach($images as $img) :
-                $src = $img->getAttribute('src');
-
-                // if the img source is 'data-url'
-                if(preg_match('/data:image/', $src)) :
-
-                    // get the mimetype
-                    preg_match('/data:image\/(?<mime>.*?)\;/', $src, $groups);
-                    $mimetype = $groups['mime'];
-
-                    // Generating a random filename
-                    $filename = md5(uniqid());
-                    $filepath = "uploads/noticias/".$filename.'.'.$mimetype;
-
-                    // @see http://image.intervention.io/api/
-                    $image = Image::make($src)
-                        ->encode($mimetype, 100) 	// encode file to the specified mimetype
-                        ->save(public_path($filepath));
-
-                    $new_src = asset($filepath);
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', $new_src);
-
-                endif;
-
-            endforeach;
-
-            $noticia->texto = $dom->saveHTML();
-
+            $noticia->resumo            = $request->resumo;
+            $noticia->tags              = $request->tags;
+            $noticia->autor             = Auth::user()->name;
+            $noticia->slug              = str_slug($request->titulo);
+            $noticia->texto             = Midia::uploadTextarea($request->texto, $this->tipo_midia);
             $noticia->destaque          = $request->destaque;
             $noticia->data              = date('Y-m-d');
-
             $noticia->save();
 
             if ($request->hasFile('imagem')) :
@@ -126,15 +94,8 @@ class Noticias extends Controller
 
     public function show($id)
     {
-        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first())->first();
-
-        if (!empty($idMidia->id_midia)) :
-            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
-            $dados['destacada'] = Midia::findOrFail($idMidia->id_midia);
-        else :
-            $dados['imagens']   = '';
-            $dados['destacada'] = '';
-        endif;
+        $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
+        $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
 
         $dados['put']           = true;
         $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
@@ -154,60 +115,28 @@ class Noticias extends Controller
          $validation = Validator::make($request->all(), [
              'id_subcategoria'   => 'required|integer',
              'titulo'            => 'required|string',
+             'resumo'            => 'string',
              'texto'             => 'required|string',
              'destaque'          => 'required|string',
-             'imagens[]'         => 'image|mimes:jpeg,bmp,png,jpg'
+             'tags'              => 'string',
+             'data'              => 'date',
+             'imagens[]'         => 'mimes:jpeg,bmp,png,jpg',
+             'imagem'            => 'mimes:jpeg,bmp,png,jpg'
         ]);
 
         if ($validation->fails()) :
             return redirect('admin/noticias/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $noticia = Noticia::findOrFail($id);
+            $noticia                    = Noticia::findOrFail($id);
 
             $noticia->id_subcategoria   = $request->id_subcategoria;
             $noticia->titulo            = $request->titulo;
-//            $noticia->texto             = $request->texto;
-            $noticia->destaque          = $request->destaque;
-
-
-            // gravando imagem do corpo da noticia
-            $dom = new \DOMDocument();
-            $dom->loadHtml($request->texto, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-            $images = $dom->getElementsByTagName('img');
-
-            // TODO fazer autlalizar as imagens do editor nas tabelas midia e multimia
-            // foreach <img> in the submited message
-            foreach($images as $img) :
-                $src = $img->getAttribute('src');
-
-                // if the img source is 'data-url'
-                if(preg_match('/data:image/', $src)) :
-
-                    // get the mimetype
-                    preg_match('/data:image\/(?<mime>.*?)\;/', $src, $groups);
-                    $mimetype = $groups['mime'];
-
-                    // Generating a random filename
-                    $filename = md5(uniqid());
-                    $filepath = "uploads/noticias/".$filename.'.'.$mimetype;
-
-                    // @see http://image.intervention.io/api/
-                    $image = Image::make($src)
-                        ->encode($mimetype, 100) 	// encode file to the specified mimetype
-                        ->save(public_path($filepath));
-
-                    $new_src = asset($filepath);
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', $new_src);
-
-                endif;
-
-            endforeach;
-
-            $noticia->texto = $dom->saveHTML();
-
+            $noticia->resumo            = $request->resumo;
+            $noticia->tags              = $request->tags;
+            $noticia->autor             = Auth::user()->name;
+            $noticia->slug              = str_slug($request->titulo);
+            $noticia->texto             = Midia::uploadTextarea($request->texto, $this->tipo_midia);
             $noticia->save();
 
             if ($request->hasFile('imagem')) :

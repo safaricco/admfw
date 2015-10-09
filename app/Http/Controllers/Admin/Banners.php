@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\LogR;
 use App\Models\Midia;
 use App\Models\Multimidia;
 use App\Models\TipoMidia;
@@ -11,8 +12,10 @@ use App\Models\Banner;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
+use League\Flysystem\Exception;
 
 class Banners extends Controller
 {
@@ -40,29 +43,39 @@ class Banners extends Controller
             'texto'     => 'required|string',
             'link'      => 'string',
             'data'      => 'date',
-            'imagens[]' => 'image|mimes:jpeg,bmp,png,jpg'
+            'imagem'    => 'image|mimes:jpeg,bmp,png,jpg'
         ]);
 
         if ($validation->fails()) :
             return redirect('admin/banners/novo')->withErrors($validation)->withInput();
         else :
 
-            $banner = new Banner();
+//            try {
 
-            $banner->titulo         = $request->titulo;
-            $banner->texto          = $request->texto;
-            $banner->link           = $request->link;
-            $banner->data_inicio    = date('Y-m-d');
+                $banner = new Banner();
 
-            $banner->save();
+                $banner->tiatulo         = $request->titulo;
+                $banner->texto          = $request->texto;
+                $banner->link           = $request->link;
+                $banner->data_inicio    = date('Y-m-d');
 
-            if ($request->hasFile('imagem')) :
+                $banner->save();
 
-                Midia::uploadUnico($this->tipo_midia, $banner->id_banner);
+                if ($request->hasFile('imagem')) :
 
-            endif;
+                    Midia::uploadUnico($this->tipo_midia, $banner->id_banner);
 
-            session()->flash('flash_message', 'Banners cadastrada com sucesso!');
+                endif;
+
+                session()->flash('flash_message', 'Banners cadastrada com sucesso!');
+
+//            } catch (\Exception $e) {
+
+//                LogR::exception();
+//                dd(Request::capture()->server());
+//                session()->flash('flash_message', $e);
+
+//            }
 
             return Redirect::back();
 
@@ -72,13 +85,7 @@ class Banners extends Controller
 
     public function show($id)
     {
-        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia))->first();
-
-        if (!empty($idMidia->id_midia))
-            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
-        else
-            $dados['imagens']   = '';
-
+        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
         $dados['put']       = true;
         $dados['dados']     = Banner::findOrFail($id);
         $dados['route']     = 'admin/banners/atualizar/'.$id;

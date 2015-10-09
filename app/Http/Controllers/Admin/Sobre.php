@@ -20,12 +20,7 @@ class Sobre extends Controller
 
     public function show($id)
     {
-        $idMidia                = collect(Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia))->first();
-
-        if (!empty($idMidia->id_midia))
-            $dados['imagens']   = Midia::find($idMidia->id_midia)->multimidia()->where('id_midia', $idMidia->id_midia)->get();
-        else
-            $dados['imagens']   = '';
+        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
         $dados['put']       = true;
         $dados['dados']     = Sobres::findOrFail($id);;
         $dados['route']     = 'admin/sobre/atualizar/'.$id;

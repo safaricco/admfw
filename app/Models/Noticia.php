@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Noticia extends Model
 {
     protected $table        = 'noticias';
-    protected $fillable     = ['titulo', 'texto', 'data', 'status'];
+    protected $fillable     = ['id_subcategoria', 'titulo', 'resumo', 'texto', 'data', 'destaque', 'autor', 'tags', 'slug', 'status'];
     protected $primaryKey   = 'id_noticia';
 
     public function subcategoria()
