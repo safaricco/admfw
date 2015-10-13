@@ -35,7 +35,15 @@ class Produto extends Controller
      */
     public function index()
     {
-        return view('admin/produtos/produtos', ['produtos' => Produtos::all()]);
+        try {
+            return view('admin/produtos/produtos', ['produtos' => Produtos::all()]);
+        } catch (\Exception $e) {
+
+            LogR::exception('index produto', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -45,11 +53,19 @@ class Produto extends Controller
      */
     public function create()
     {
-        $dados['put']           = false;
-        $dados['dados']         = '';
-        $dados['route']         = 'admin/produtos/store';
-        $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        return view('admin/produtos/dados', $dados);
+        try {
+            $dados['put']           = false;
+            $dados['dados']         = '';
+            $dados['route']         = 'admin/produtos/store';
+            $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
+            return view('admin/produtos/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('create produto', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -72,31 +88,38 @@ class Produto extends Controller
             return redirect('admin/produtos/novo')->withErrors($validation)->withInput();
         else :
 
-            $produto = new Produtos();
+            try {
+                $produto = new Produtos();
 
-            $produto->nome              = $request->nome;
-            $produto->descricao         = $request->descricao;
-            $produto->ref               = $request->ref;
-            $produto->idSubcategoria    = $request->idSubcategoria;
+                $produto->nome              = $request->nome;
+                $produto->descricao         = $request->descricao;
+                $produto->ref               = $request->ref;
+                $produto->idSubcategoria    = $request->idSubcategoria;
 
-            $produto->save();
+                $produto->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $produto->id_produto);
+                    Midia::uploadDestacada($this->tipo_midia, $produto->id_produto);
 
-            endif;
+                endif;
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $produto->id_produto);
+                    Midia::uploadMultiplo($this->tipo_midia, $produto->id_produto);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Produto cadastrado com sucesso!');
+                session()->flash('flash_message', 'Produto cadastrado com sucesso!');
 
-            return Redirect::back();
+                return Redirect::back();
 
+            } catch (\Exception $e) {
+
+                LogR::exception($produto, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
         endif;
     }
 
@@ -108,13 +131,21 @@ class Produto extends Controller
      */
     public function show($id)
     {
-        $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
-        $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
-        $dados['put']           = true;
-        $dados['dados']         = Produtos::findOrFail($id);
-        $dados['route']         = 'admin/produtos/atualizar/'.$id;
-        $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        return view('admin/produtos/dados', $dados);
+        try {
+            $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
+            $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
+            $dados['put']           = true;
+            $dados['dados']         = Produtos::findOrFail($id);
+            $dados['route']         = 'admin/produtos/atualizar/'.$id;
+            $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
+            return view('admin/produtos/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show produto', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
     }
 
     /**
@@ -149,28 +180,36 @@ class Produto extends Controller
             return redirect('admin/produtos/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $produto = Produtos::findOrFail($id);
+            try {
+                $produto = Produtos::findOrFail($id);
 
-            $produto->nome              = $request->nome;
-            $produto->descricao         = $request->descricao;
-            $produto->ref               = $request->ref;
-            $produto->idSubcategoria    = $request->idSubcategoria;
+                $produto->nome              = $request->nome;
+                $produto->descricao         = $request->descricao;
+                $produto->ref               = $request->ref;
+                $produto->idSubcategoria    = $request->idSubcategoria;
 
-            $produto->save();
+                $produto->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $produto->id_produto);
+                    Midia::uploadDestacada($this->tipo_midia, $produto->id_produto);
 
-            endif;
+                endif;
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $produto->id_produto);
+                    Midia::uploadMultiplo($this->tipo_midia, $produto->id_produto);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Produto alterado com sucesso!');
+                session()->flash('flash_message', 'Produto alterado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($produto, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -185,25 +224,39 @@ class Produto extends Controller
      */
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Produtos::destroy($id);
+            Produtos::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy produto', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Produtos::findOrFail($id);
+        try {
+            $dado         = Produtos::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
 
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
         return Redirect::back();
     }
 }

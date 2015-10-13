@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Helps;
+use App\Models\LogR;
 use App\Models\Midia;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -30,8 +31,17 @@ class Help extends Controller
      */
     public function index()
     {
-        $dados['itens'] = Helps::all();
-        return view('admin/ajuda/ajuda', $dados);
+        try {
+            $dados['itens'] = Helps::all();
+            return view('admin/ajuda/ajuda', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index help', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -41,8 +51,17 @@ class Help extends Controller
      */
     public function listar()
     {
-        $dados['itens'] = Helps::all();
-        return view('admin/ajuda/listar', $dados);
+        try {
+            $dados['itens'] = Helps::all();
+            return view('admin/ajuda/listar', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('listar help', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -52,10 +71,19 @@ class Help extends Controller
      */
     public function create()
     {
-        $dados['put']           = false;
-        $dados['dados']         = '';
-        $dados['route']         = 'admin/ajuda/store';
-        return view('admin/ajuda/dados', $dados);
+        try {
+            $dados['put']           = false;
+            $dados['dados']         = '';
+            $dados['route']         = 'admin/ajuda/store';
+            return view('admin/ajuda/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create help', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -76,15 +104,23 @@ class Help extends Controller
             return redirect('admin/ajuda/novo')->withErrors($validation)->withInput();
         else :
 
-            $ajuda          = new Helps();
+            try {
+                $ajuda          = new Helps();
 
-            $ajuda->titulo  = $request->titulo;
-            $ajuda->icone   = $request->icone;
-            $ajuda->texto   = Midia::uploadTextarea($request->texto, $this->tipo_midia);
+                $ajuda->titulo  = $request->titulo;
+                $ajuda->icone   = $request->icone;
+                $ajuda->texto   = Midia::uploadTextarea($request->texto, $this->tipo_midia);
 
-            $ajuda->save();
+                $ajuda->save();
 
-            session()->flash('flash_message', 'Item de ajuda cadastrado com sucesso!');
+                session()->flash('flash_message', 'Item de ajuda cadastrado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($ajuda, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -99,8 +135,17 @@ class Help extends Controller
      */
     public function show($id)
     {
-        $dados['dados'] = Helps::findOrFail($id);
-        return view('admin/ajuda/visualizar', $dados);
+        try {
+            $dados['dados'] = Helps::findOrFail($id);
+            return view('admin/ajuda/visualizar', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show help', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -111,11 +156,19 @@ class Help extends Controller
      */
     public function edit($id)
     {
-        $dados['put']   = true;
-        $dados['dados'] = Helps::findOrFail($id);
-        $dados['route'] = 'admin/ajuda/atualizar/'.$id;
+        try {
+            $dados['put']   = true;
+            $dados['dados'] = Helps::findOrFail($id);
+            $dados['route'] = 'admin/ajuda/atualizar/'.$id;
 
-        return view('admin/ajuda/dados', $dados);
+            return view('admin/ajuda/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('edit help', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -137,14 +190,22 @@ class Help extends Controller
             return redirect('admin/adjua/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $ajuda = Helps::findOrFail($id);
+            try {
+                $ajuda = Helps::findOrFail($id);
 
-            $ajuda->titulo  = $request->titulo;
-            $ajuda->icone   = $request->icone;
-            $ajuda->texto   = Midia::uploadTextarea($request->texto, $this->tipo_midia);
-            $ajuda->save();
+                $ajuda->titulo  = $request->titulo;
+                $ajuda->icone   = $request->icone;
+                $ajuda->texto   = Midia::uploadTextarea($request->texto, $this->tipo_midia);
+                $ajuda->save();
 
-            session()->flash('flash_message', 'Item de ajuda alterado com sucesso!');
+                session()->flash('flash_message', 'Item de ajuda alterado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($ajuda, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
         endif;
@@ -158,9 +219,17 @@ class Help extends Controller
      */
     public function destroy($id)
     {
-        Helps::destroy($id);
+        try {
+            Helps::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy help', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

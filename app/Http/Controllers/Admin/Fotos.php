@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Foto;
+use App\Models\LogR;
 use App\Models\Midia;
 use App\Models\Multimidia;
 use App\Models\TipoMidia;
@@ -26,16 +27,36 @@ class Fotos extends Controller
 
     public function index()
     {
-        $dados['fotos']  = Foto::all();
-        return view('admin/fotos/fotos', $dados);
+        try {
+
+            $dados['fotos']  = Foto::all();
+            return view('admin/fotos/fotos', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index fotos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/fotos/store';
-        return view('admin/fotos/dados', $dados);
+
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/fotos/store';
+            return view('admin/fotos/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create fotos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function store(Request $request)
@@ -51,21 +72,29 @@ class Fotos extends Controller
             return redirect('admin/fotos/novo')->withErrors($validation)->withInput();
         else :
 
-            $foto = new Foto();
+            try {
+                $foto = new Foto();
 
-            $foto->titulo    = $request->titulo;
-            $foto->texto     = $request->texto;
-            $foto->data      = date('Y-m-d');
+                $foto->titulo    = $request->titulo;
+                $foto->texto     = $request->texto;
+                $foto->data      = date('Y-m-d');
 
-            $foto->save();
+                $foto->save();
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $foto->id_foto);
+                    Midia::uploadMultiplo($this->tipo_midia, $foto->id_foto);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Galerias cadastrada com sucesso!');
+                session()->flash('flash_message', 'Galerias cadastrada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($foto, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -75,12 +104,21 @@ class Fotos extends Controller
 
     public function show($id)
     {
-        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
-        $dados['put']       = true;
-        $dados['dados']     = Foto::findOrFail($id);
-        $dados['route']     = 'admin/fotos/atualizar/'.$id;
+        try {
+            $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
+            $dados['put']       = true;
+            $dados['dados']     = Foto::findOrFail($id);
+            $dados['route']     = 'admin/fotos/atualizar/'.$id;
 
-        return view('admin/fotos/dados', $dados);
+            return view('admin/fotos/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show fotos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
 
@@ -101,20 +139,28 @@ class Fotos extends Controller
             return redirect('admin/fotos/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $foto           = Foto::findOrFail($id);
+            try {
+                $foto           = Foto::findOrFail($id);
 
-            $foto->titulo   = $request->titulo;
-            $foto->texto    = $request->texto;
+                $foto->titulo   = $request->titulo;
+                $foto->texto    = $request->texto;
 
-            $foto->save();
+                $foto->save();
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $foto->id_foto);
+                    Midia::uploadMultiplo($this->tipo_midia, $foto->id_foto);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Galeria alterada com sucesso!');
+                session()->flash('flash_message', 'Galeria alterada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($foto, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
         endif;
@@ -123,24 +169,40 @@ class Fotos extends Controller
 
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Foto::destroy($id);
+            Foto::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy fotos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Foto::findOrFail($id);
+        try {
+            $dado         = Foto::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

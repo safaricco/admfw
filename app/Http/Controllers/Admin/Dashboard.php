@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Spatie\LaravelAnalytics\LaravelAnalytics;
 
@@ -30,8 +31,16 @@ class Dashboard extends Controller
 //        $analyticsData->setSiteId('ga:UA-61838331-1');
 //        $analyticsData->getVisitorsAndPageViews();
 //        dd($analyticsData);
+        try{
+            return view('admin/dashboard');
 
-        return view('admin/dashboard');
+        } catch (\Exception $e) {
+
+            LogR::exception('index dashboard', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return view('admin/dashboard');
+        }
     }
 
     /**

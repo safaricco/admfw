@@ -33,7 +33,15 @@ class Servico extends Controller
      */
     public function index()
     {
-        return view('admin/servicos/servicos', ['servicos' => Servicos::all()]);
+        try {
+            return view('admin/servicos/servicos', ['servicos' => Servicos::all()]);
+        } catch (\Exception $e) {
+
+            LogR::exception('index servico', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -43,11 +51,19 @@ class Servico extends Controller
      */
     public function create()
     {
-        $dados['put']           = false;
-        $dados['dados']         = '';
-        $dados['route']         = 'admin/servicos/store';
-        $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        return view('admin/servicos/dados', $dados);
+        try {
+            $dados['put']           = false;
+            $dados['dados']         = '';
+            $dados['route']         = 'admin/servicos/store';
+            $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
+            return view('admin/servicos/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('create servico', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -70,28 +86,36 @@ class Servico extends Controller
             return redirect('admin/servicos/novo')->withErrors($validation)->withInput();
         else :
 
-            $servico = new Servicos();
+            try {
+                $servico = new Servicos();
 
-            $servico->nome              = $request->nome;
-            $servico->descricao         = $request->descricao;
-            $servico->ref               = $request->ref;
-            $servico->id_subcategoria   = $request->id_subcategoria;
+                $servico->nome              = $request->nome;
+                $servico->descricao         = $request->descricao;
+                $servico->ref               = $request->ref;
+                $servico->id_subcategoria   = $request->id_subcategoria;
 
-            $servico->save();
+                $servico->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $servico->id_servico);
+                    Midia::uploadDestacada($this->tipo_midia, $servico->id_servico);
 
-            endif;
+                endif;
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $servico->id_servico);
+                    Midia::uploadMultiplo($this->tipo_midia, $servico->id_servico);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Produto cadastrado com sucesso!');
+                session()->flash('flash_message', 'Produto cadastrado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($servico, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -106,13 +130,20 @@ class Servico extends Controller
      */
     public function show($id)
     {
-        $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
-        $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
-        $dados['put']           = true;
-        $dados['dados']         = Servicos::findOrFail($id);
-        $dados['route']         = 'admin/servicos/atualizar/'.$id;
-        $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        return view('admin/servicos/dados', $dados);
+        try {
+            $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
+            $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
+            $dados['put']           = true;
+            $dados['dados']         = Servicos::findOrFail($id);
+            $dados['route']         = 'admin/servicos/atualizar/'.$id;
+            $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
+            return view('admin/servicos/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('show servico', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
     }
 
     /**
@@ -147,29 +178,36 @@ class Servico extends Controller
             return redirect('admin/servicos/novo')->withErrors($validation)->withInput();
         else :
 
-            $servico = Servicos::findOrFail($id);
+            try {
+                $servico = Servicos::findOrFail($id);
 
-            $servico->nome              = $request->nome;
-            $servico->descricao         = $request->descricao;
-            $servico->ref               = $request->ref;
-            $servico->id_subcategoria   = $request->id_subcategoria;
+                $servico->nome              = $request->nome;
+                $servico->descricao         = $request->descricao;
+                $servico->ref               = $request->ref;
+                $servico->id_subcategoria   = $request->id_subcategoria;
 
-            $servico->save();
+                $servico->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $servico->id_servico);
+                    Midia::uploadDestacada($this->tipo_midia, $servico->id_servico);
 
-            endif;
+                endif;
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $servico->id_servico);
+                    Midia::uploadMultiplo($this->tipo_midia, $servico->id_servico);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Produto alterado com sucesso!');
+                session()->flash('flash_message', 'Produto alterado com sucesso!');
 
+            } catch (\Exception $e) {
+
+                LogR::exception($servico, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
             return Redirect::back();
 
         endif;
@@ -183,25 +221,39 @@ class Servico extends Controller
      */
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Servicos::destroy($id);
+            Servicos::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy servicos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Servicos::findOrFail($id);
+        try {
+            $dado         = Servicos::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
 
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
         return Redirect::back();
     }
 }

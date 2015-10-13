@@ -38,6 +38,7 @@ class CreateLogTable extends Migration
             $table->string('mensagem')->nullable();
             $table->string('arquivo')->nullable();
             $table->string('codigo_erro')->nullable();
+            $table->string('linha')->nullable();
             $table->longText('trace_string')->nullable();
             $table->timestamps();
 

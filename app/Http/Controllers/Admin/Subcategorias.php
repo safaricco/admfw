@@ -28,8 +28,17 @@ class Subcategorias extends Controller
      */
     public function index()
     {
-        $dados['subcategorias'] = Subcategoria::all();
-        return view('admin/subcategorias/subcategorias', $dados);
+        try {
+            $dados['subcategorias'] = Subcategoria::all();
+            return view('admin/subcategorias/subcategorias', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index subcategorias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -39,11 +48,20 @@ class Subcategorias extends Controller
      */
     public function create()
     {
-        $dados['put']           = false;
-        $dados['dados']         = '';
-        $dados['route']         = 'admin/subcategorias/store';
-        $dados['categorias']    = Categoria::all();
-        return view('admin/subcategorias/dados', $dados);
+        try {
+            $dados['put']           = false;
+            $dados['dados']         = '';
+            $dados['route']         = 'admin/subcategorias/store';
+            $dados['categorias']    = Categoria::all();
+            return view('admin/subcategorias/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create subcategorias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -63,14 +81,22 @@ class Subcategorias extends Controller
             return redirect('admin/subcategorias/novo')->withErrors($validation)->withInput();
         else :
 
-            $sub = new Subcategoria();
+            try {
+                $sub = new Subcategoria();
 
-            $sub->id_categoria  = $request->id_categoria;
-            $sub->titulo        = $request->titulo;
+                $sub->id_categoria  = $request->id_categoria;
+                $sub->titulo        = $request->titulo;
 
-            $sub->save();
+                $sub->save();
 
-            session()->flash('flash_message', 'Subcategoria cadastrada com sucesso!');
+                session()->flash('flash_message', 'Subcategoria cadastrada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($sub, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -96,11 +122,20 @@ class Subcategorias extends Controller
      */
     public function edit($id)
     {
-        $dados['put']           = true;
-        $dados['dados']         = Subcategoria::findOrFail($id);
-        $dados['route']         = 'admin/subcategorias/update';
-        $dados['categorias']    = Categoria::all();
-        return view('admin/subcategorias/dados', $dados);
+        try {
+            $dados['put']           = true;
+            $dados['dados']         = Subcategoria::findOrFail($id);
+            $dados['route']         = 'admin/subcategorias/update';
+            $dados['categorias']    = Categoria::all();
+            return view('admin/subcategorias/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('edit subcategorias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -121,15 +156,22 @@ class Subcategorias extends Controller
             return redirect('admin/subcategorias/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $sub = Subcategoria::findOrFail($id);
+            try {
+                $sub = Subcategoria::findOrFail($id);
 
-            $sub->id_categoria  = $request->id_categoria;
-            $sub->titulo        = $request->titulo;
+                $sub->id_categoria  = $request->id_categoria;
+                $sub->titulo        = $request->titulo;
 
-            $sub->save();
+                $sub->save();
 
-            session()->flash('flash_message', 'Subcategoria alterada com sucesso!');
+                session()->flash('flash_message', 'Subcategoria alterada com sucesso!');
 
+            } catch (\Exception $e) {
+
+                LogR::exception($sub, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
             return Redirect::back();
 
         endif;
@@ -143,22 +185,37 @@ class Subcategorias extends Controller
      */
     public function destroy($id)
     {
-        Subcategoria::destroy($id);
+        try {
+            Subcategoria::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy subcategorias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Subcategoria::findOrFail($id);
+        try {
+            $dado         = Subcategoria::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

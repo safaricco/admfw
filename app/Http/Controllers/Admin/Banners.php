@@ -29,16 +29,35 @@ class Banners extends Controller
 
     public function index()
     {
-        $dados['banners']  = Banner::all();
-        return view('admin/banners/banners', $dados);
+        try {
+            $dados['banners']  = Banner::all();
+            return view('admin/banners/banners', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index banner', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+            return Redirect::back();
+
+        }
     }
 
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/banners/store'; 
-        return view('admin/banners/dados', $dados);
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/banners/store';
+            return view('admin/banners/dados', $dados);
+
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create banner', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+            return Redirect::back();
+
+        }
     }
 
     public function store(Request $request)
@@ -77,7 +96,7 @@ class Banners extends Controller
             } catch (\Exception $e) {
 
                 LogR::exception($banner, $e);
-                session()->flash('flash_message', 'Algum problema ocorreu!. ' . $e->getMessage());
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
 
             }
 
@@ -89,12 +108,21 @@ class Banners extends Controller
 
     public function show($id)
     {
-        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
-        $dados['put']       = true;
-        $dados['dados']     = Banner::findOrFail($id);
-        $dados['route']     = 'admin/banners/atualizar/'.$id;
+        try {
+            $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
+            $dados['put']       = true;
+            $dados['dados']     = Banner::findOrFail($id);
+            $dados['route']     = 'admin/banners/atualizar/'.$id;
 
-        return view('admin/banners/dados', $dados);
+            return view('admin/banners/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show banner', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+            return Redirect::back();
+
+        }
     }
 
 
@@ -117,21 +145,29 @@ class Banners extends Controller
             return redirect('admin/banners/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $banner = Banner::findOrFail($id);
+            try {
+                $banner = Banner::findOrFail($id);
 
-            $banner->titulo         = $request->titulo;
-            $banner->texto          = $request->texto;
-            $banner->link           = $request->link;
+                $banner->titulo         = $request->titulo;
+                $banner->texto          = $request->texto;
+                $banner->link           = $request->link;
 
-            $banner->save();
+                $banner->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadUnico($this->tipo_midia, $banner->id_banner);
+                    Midia::uploadUnico($this->tipo_midia, $banner->id_banner);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Banners alterada com sucesso!');
+                session()->flash('flash_message', 'Banners alterada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($banner, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
         endif;
@@ -139,24 +175,40 @@ class Banners extends Controller
 
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Banner::destroy($id);
+            Banner::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy banner', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Banner::findOrFail($id);
+        try {
+            $dado         = Banner::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

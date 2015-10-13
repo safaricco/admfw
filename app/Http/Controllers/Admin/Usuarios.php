@@ -33,8 +33,17 @@ class Usuarios extends Controller
      */
     public function index()
     {
-        $dados['usuarios']      = User::selecionarUsuarios();
-        return view('admin/usuarios/usuarios', $dados);
+        try {
+            $dados['usuarios']      = User::selecionarUsuarios();
+            return view('admin/usuarios/usuarios', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index usuarios', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -44,15 +53,24 @@ class Usuarios extends Controller
      */
     public function create()
     {
-        $dados['funcoes']       = Funcao::all();
-        $dados['roles']         = Role::all();
-        $dados['put']           = false;
-        $dados['route']         = '/admin/configuracoes/usuarios/store';
-        $dados['permissao']     = '';
-        $dados['dados']         = '';
-        $dados['perfis']        = Perfil::all();
-        $dados['perfilUser']    = '';
-        return view('admin/usuarios/dados', $dados);
+        try {
+            $dados['funcoes']       = Funcao::all();
+            $dados['roles']         = Role::all();
+            $dados['put']           = false;
+            $dados['route']         = '/admin/configuracoes/usuarios/store';
+            $dados['permissao']     = '';
+            $dados['dados']         = '';
+            $dados['perfis']        = Perfil::all();
+            $dados['perfilUser']    = '';
+            return view('admin/usuarios/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create usuarios', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -74,37 +92,60 @@ class Usuarios extends Controller
             return redirect('admin/configuracoes/usuarios/novo')->withErrors($validator)->withInput();
         else :
 
-            $user           = new User();
+            try {
+                $user           = new User();
 
-            $user->name     = $request->name;
-            $user->email    = $request->email;
-            $user->password = bcrypt($request->password);
+                $user->name     = $request->name;
+                $user->email    = $request->email;
+                $user->password = bcrypt($request->password);
 
-            $user->save();
+                $user->save();
 
-            $funcoes = Funcao::all();
+                $funcoes = Funcao::all();
 
-            $cont = 1;
+                $cont = 1;
 
-            foreach ($funcoes as $funcao) :
+                foreach ($funcoes as $funcao) :
 
-                $permissao = new PermissaoUser();
+                    try {
+                        $permissao = new PermissaoUser();
 
-                $permissao->id_funcao   = $funcao->id_funcao;
-                $permissao->id_user     = $user->id;
-                $permissao->id_role     = $request->$cont;
-                $permissao->save();
+                        $permissao->id_funcao   = $funcao->id_funcao;
+                        $permissao->id_user     = $user->id;
+                        $permissao->id_role     = $request->$cont;
+                        $permissao->save();
 
-                $cont++;
+                        $cont++;
 
-            endforeach;
+                    } catch (\Exception $e) {
 
-            $perfilUser             = new PerfilUser();
-            $perfilUser->id_perfil  = $request->id_perfil;
-            $perfilUser->id_user    = $user->id;
-            $perfilUser->save();
+                        LogR::exception($permissao, $e);
+                        session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
 
-            session()->flash('flash_message', 'Registro gravado com sucesso!');
+                    }
+                endforeach;
+
+                try {
+                    $perfilUser             = new PerfilUser();
+                    $perfilUser->id_perfil  = $request->id_perfil;
+                    $perfilUser->id_user    = $user->id;
+                    $perfilUser->save();
+
+                } catch (\Exception $e) {
+
+                    LogR::exception($perfilUser, $e);
+                    session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+                }
+
+                session()->flash('flash_message', 'Registro gravado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($user, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -119,15 +160,24 @@ class Usuarios extends Controller
      */
     public function show($id)
     {
-        $dados['put']           = true;
-        $dados['route']         = '/admin/configuracoes/usuarios/atualizar/'.$id;
-        $dados['dados']         = User::findOrFail($id);
-        $dados['funcoes']       = Funcao::all();
-        $dados['roles']         = Role::all();
-        $dados['permissao']     = PermissaoUser::where('id_user', $id)->get();
-        $dados['perfis']        = Perfil::all();
-        $dados['perfilUser']    = PerfilUser::where('id_user', $id)->first();
-        return view('admin/usuarios/dados', $dados);
+        try {
+            $dados['put']           = true;
+            $dados['route']         = '/admin/configuracoes/usuarios/atualizar/'.$id;
+            $dados['dados']         = User::findOrFail($id);
+            $dados['funcoes']       = Funcao::all();
+            $dados['roles']         = Role::all();
+            $dados['permissao']     = PermissaoUser::where('id_user', $id)->get();
+            $dados['perfis']        = Perfil::all();
+            $dados['perfilUser']    = PerfilUser::where('id_user', $id)->first();
+            return view('admin/usuarios/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show usuarios', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -138,8 +188,17 @@ class Usuarios extends Controller
      */
     public function edit($id)
     {
-        $dados['user']  = User::findOrFail(Auth::user()->id);
-        return view('admin/usuarios/perfil', $dados);
+        try {
+            $dados['user']  = User::findOrFail(Auth::user()->id);
+            return view('admin/usuarios/perfil', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('edit usuario', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -162,38 +221,62 @@ class Usuarios extends Controller
             return redirect('admin/configuracoes/usuarios/editar/'.$id)->withErrors($validacao)->withInput();
         else :
 
-            $user           = User::find($id);
+            try {
+                $user           = User::find($id);
 
-            $user->name     = $request->name;
-            $user->email    = $request->email;
+                $user->name     = $request->name;
+                $user->email    = $request->email;
 
-            if (!empty($request->password))
-                $user->password = bcrypt($request->password);
+                if (!empty($request->password))
+                    $user->password = bcrypt($request->password);
 
-            $user->save();
+                $user->save();
 
-            // gravando as permissões específicas do usuário
-            $funcoes = Funcao::all();
+                // gravando as permissões específicas do usuário
+                $funcoes = Funcao::all();
 
-            $cont = 1;
+                $cont = 1;
 
-            foreach ($funcoes as $funcao) :
+                foreach ($funcoes as $funcao) :
 
-                $permissao = PermissaoUser::where('id_funcao', $funcao->id_funcao)->where('id_user', $user->id)->first();
+                    try {
+                        $permissao = PermissaoUser::where('id_funcao', $funcao->id_funcao)->where('id_user', $user->id)->first();
 
-                $permissao->id_role = $request->$cont;
-                $permissao->save();
+                        $permissao->id_role = $request->$cont;
+                        $permissao->save();
 
-                $cont++;
+                        $cont++;
 
-            endforeach;
+                    } catch (\Exception $e) {
 
-            // gravando o vinculo do usuário com o perfil selecionado
-            $perfilUser             = PerfilUser::where('id_user', $id)->first();
-            $perfilUser->id_perfil  = $request->id_perfil;
-            $perfilUser->save();
+                        LogR::exception($permissao, $e);
+                        session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
 
-            session()->flash('flash_message', 'Registro atualizado com sucesso!');
+                    }
+
+                endforeach;
+
+                try {
+                    // gravando o vinculo do usuário com o perfil selecionado
+                    $perfilUser             = PerfilUser::where('id_user', $id)->first();
+                    $perfilUser->id_perfil  = $request->id_perfil;
+                    $perfilUser->save();
+
+                } catch (\Exception $e) {
+
+                    LogR::exception($perfilUser, $e);
+                    session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+                }
+
+                session()->flash('flash_message', 'Registro atualizado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($user, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -217,13 +300,21 @@ class Usuarios extends Controller
             return redirect('admin/perfil/'.$id)->withErrors($validator)->withInput();
         else :
 
-            $user           = User::findOrFail($id);
+            try {
+                $user           = User::findOrFail($id);
 
-            $user->name     = $request->name;
+                $user->name     = $request->name;
 
-            $user->save();
+                $user->save();
 
-            session()->flash('flash_message', 'Dados alterados com sucesso!');
+                session()->flash('flash_message', 'Dados alterados com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($user, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -247,24 +338,32 @@ class Usuarios extends Controller
             return redirect('admin/perfil/'.$id)->withErrors($validator)->withInput();
         else :
 
-            $user = User::findOrFail($id);
+            try {
+                $user = User::findOrFail($id);
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                if ($request->file('imagem')->isValid()) :
+                    if ($request->file('imagem')->isValid()) :
 
-                    $nomeOriginal   = $request->file('imagem')->getClientOriginalName();
-                    $novoNome       = md5(uniqid($nomeOriginal)).'.'.$request->file('imagem')->getClientOriginalExtension();
-                    $request->file('imagem')->move('webroot/images/perfisAdm/', $novoNome);
+                        $nomeOriginal   = $request->file('imagem')->getClientOriginalName();
+                        $novoNome       = md5(uniqid($nomeOriginal)).'.'.$request->file('imagem')->getClientOriginalExtension();
+                        $request->file('imagem')->move('webroot/images/perfisAdm/', $novoNome);
 
-                    $user->imagem = $novoNome;
+                        $user->imagem = $novoNome;
 
-                    $user->save();
+                        $user->save();
+                    endif;
                 endif;
-            endif;
 
-            session()->flash('flash_message', 'Dados alterados com sucesso! Enviamos uma confirmação para o seu e-mail, verifique seu e-mail');
+                session()->flash('flash_message', 'Dados alterados com sucesso! Enviamos uma confirmação para o seu e-mail, verifique seu e-mail');
 
+
+            } catch (\Exception $e) {
+
+                LogR::exception($user, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
             return Redirect::back();
 
         endif;
@@ -288,13 +387,21 @@ class Usuarios extends Controller
             return redirect('admin/configuracoes/usuarios/perfil/editar/'.$id)->withErrors($validator)->withInput();
         else :
 
-            $user           = User::findOrFail($id);
+            try {
+                $user           = User::findOrFail($id);
 
-            $user->password = bcrypt($request->password);
+                $user->password = bcrypt($request->password);
 
-            $user->save();
+                $user->save();
 
-            session()->flash('flash_message', 'Senha alterada com sucesso!');
+                session()->flash('flash_message', 'Senha alterada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($user, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -303,13 +410,22 @@ class Usuarios extends Controller
 
     public function updateStatus($status, $id)
     {
-        $user         = User::findOrFail($id);
 
-        $user->status = $status;
+        try {
+            $user         = User::findOrFail($id);
 
-        $user->save();
+            $user->status = $status;
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            $user->save();
+
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($user, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

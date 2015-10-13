@@ -31,7 +31,16 @@ class Destaques extends Controller
      */
     public function index()
     {
-        return view('admin.destaques.destaques', ['destaques' => Destaque::all()]);
+        try {
+            return view('admin.destaques.destaques', ['destaques' => Destaque::all()]);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index destaques', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -41,11 +50,19 @@ class Destaques extends Controller
      */
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/destaques/store';
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/destaques/store';
 
-        return view('admin/destaques/dados', $dados);
+            return view('admin/destaques/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('create destaques', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -68,47 +85,30 @@ class Destaques extends Controller
             return redirect('admin/destaques/novo')->withErrors($validation)->withInput();
         else :
 
-            $destaque = new Destaque();
+            try {
+                $destaque = new Destaque();
 
-            $destaque->nome         = $request->nome;
-            $destaque->data         = date('Y-m-d', strtotime($request->data));
-            $destaque->hora         = $request->hora;
-            $destaque->profissional = $request->profissional;
+                $destaque->nome         = $request->nome;
+                $destaque->data         = date('Y-m-d', strtotime($request->data));
+                $destaque->hora         = $request->hora;
+                $destaque->profissional = $request->profissional;
 
-            $destaque->save();
+                $destaque->save();
 
-            // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO N�O EST� CORROMPIDO
-            if ($request->hasFile('imagem')) :
+                // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO N�O EST� CORROMPIDO
+                if ($request->hasFile('imagem')) :
 
-                $nomeTipo = TipoMidia::findOrFail($this->tipo_midia)->descricao;                                                // A VARI�VEL $nomeTipo CONT�M O NOME DO TIPO DA MIDIA E SER� USADA COMO NOME DA PASTA DENTRO DA PASTA UPLOADS
+                    Midia::uploadUnico($this->tipo_midia, $destaque->id_destaque);
+                endif;
 
-                // CRIANDO O REGISTRO PAI NA TABELA MIDIA
-                $midia                      = new Midia();
-                $midia->id_tipo_midia       = $this->tipo_midia;
-                $midia->id_registro_tabela  = $destaque->id_destaques;
-                $midia->descricao           = $nomeTipo . ' criado automaticamente';
-                $midia->save();
+                session()->flash('flash_message', 'Banners cadastrada com sucesso!');
 
-                $img = $request->file('imagem');
+            } catch (\Exception $e) {
 
-                $nomeOriginal = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
+                LogR::exception($destaque, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
 
-                $novoNome     = md5(uniqid($nomeOriginal)) . '.' . $img->getClientOriginalExtension();    // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTEN��O DO ARQUIVO
-
-                $img->move('uploads/' . $nomeTipo, $novoNome);                                              // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                $imagem = new Multimidia();                                                         // GRAVANDO NA TABELA MULTIMIDIA
-
-                // PREPARANDO DADOS PARA GRAVAR NA TABELA MULTIMIDIA
-                $imagem->id_midia   = $midia->id_midia;
-                $imagem->imagem     = $novoNome;
-                $imagem->ordem      = $request->ordem;
-                $imagem->video      = $request->video;
-
-                $imagem->save();
-            endif;
-
-            session()->flash('flash_message', 'Banners cadastrada com sucesso!');
+            }
 
             return Redirect::back();
 

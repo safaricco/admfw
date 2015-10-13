@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Equipes;
+use App\Models\LogR;
 use App\Models\Midia;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -27,7 +28,15 @@ class Equipe extends Controller
      */
     public function index()
     {
-        return view('admin/equipe/equipe', ['equipe' => Equipes::all()]);
+        try {
+            return view('admin/equipe/equipe', ['equipe' => Equipes::all()]);
+        } catch (\Exception $e) {
+
+            LogR::exception('index equipe', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -37,10 +46,18 @@ class Equipe extends Controller
      */
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/equipe/store';
-        return view('admin/equipe/dados', $dados);
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/equipe/store';
+            return view('admin/equipe/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('create equipe', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -62,21 +79,29 @@ class Equipe extends Controller
             return redirect('admin/equipe/novo')->withErrors($validation)->withInput();
         else :
 
-            $equipe             = new Equipes();
+            try {
+                $equipe             = new Equipes();
 
-            $equipe->nome       = $request->nome;
-            $equipe->descricao  = $request->descricao;
-            $equipe->funcao     = $request->funcao;
+                $equipe->nome       = $request->nome;
+                $equipe->descricao  = $request->descricao;
+                $equipe->funcao     = $request->funcao;
 
-            $equipe->save();
+                $equipe->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $equipe->id_equipe);
+                    Midia::uploadDestacada($this->tipo_midia, $equipe->id_equipe);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Membro da equipe cadastrado com sucesso!');
+                session()->flash('flash_message', 'Membro da equipe cadastrado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($equipe, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -91,11 +116,20 @@ class Equipe extends Controller
      */
     public function show($id)
     {
-        $dados['destacada'] = Midia::destacada($this->tipo_midia, $id);
-        $dados['put']       = true;
-        $dados['dados']     = Equipes::findOrFail($id);
-        $dados['route']     = 'admin/equipe/atualizar/'.$id;
-        return view('admin/equipe/dados', $dados);
+        try {
+            $dados['destacada'] = Midia::destacada($this->tipo_midia, $id);
+            $dados['put']       = true;
+            $dados['dados']     = Equipes::findOrFail($id);
+            $dados['route']     = 'admin/equipe/atualizar/'.$id;
+            return view('admin/equipe/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show equipe', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -129,21 +163,29 @@ class Equipe extends Controller
             return redirect('admin/equipe/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $equipe             = Equipes::findOrFail($id);
+            try {
+                $equipe             = Equipes::findOrFail($id);
 
-            $equipe->nome       = $request->nome;
-            $equipe->descricao  = $request->descricao;
-            $equipe->funcao     = $request->funcao;
+                $equipe->nome       = $request->nome;
+                $equipe->descricao  = $request->descricao;
+                $equipe->funcao     = $request->funcao;
 
-            $equipe->save();
+                $equipe->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $equipe->id_equipe);
+                    Midia::uploadDestacada($this->tipo_midia, $equipe->id_equipe);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Membro da equipe alterado com sucesso!');
+                session()->flash('flash_message', 'Membro da equipe alterado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($equipe, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -158,24 +200,40 @@ class Equipe extends Controller
      */
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Equipes::destroy($id);
+            Equipes::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy equipe', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Equipes::findOrFail($id);
+        try {
+            $dado         = Equipes::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

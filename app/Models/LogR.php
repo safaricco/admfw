@@ -23,7 +23,7 @@ class LogR extends Model
             $log->operacao              = $operacao;
             $log->status_request        = LogR::status();
             $log->dominio               = url();
-            $log->sistema_operacional   = '';
+            $log->sistema_operacional   = LogR::getSistemaOperacional();
             $log->navegador             = LogR::getBrowser();
             $log->ipUsuario             = LogR::getIp('usuario');
             $log->ipServidor            = LogR::getIp('servidor');
@@ -49,52 +49,73 @@ class LogR extends Model
 
     public static function exception($dados, $e = null)
     {
-        $confsite                   = Configuracao::findOrFail(1);
+        try {
+            $confsite                   = Configuracao::findOrFail(1);
 
-        $log                        = new LogR();
+            $log                        = new LogR();
 
-        $log->tipo                  = 'exception';
-        $log->status_request        = LogR::status();
-        $log->site                  = $confsite->nome_site;
-        $log->dominio               = url();
-        $log->sistema_operacional   = '';
-        $log->navegador             = LogR::getBrowser();
-        $log->ipUsuario             = LogR::getIp('usuario');
-        $log->ipServidor            = LogR::getIp('servidor');
-        $log->usuario               = Auth::user()->email;
-        $log->urlOrigem             = LogR::getOrigem();
-        $log->urlDestino            = LogR::getDestino();
-        $log->method                = LogR::getMethod();
-        $log->dados                 = implode(' | ', collect($dados)->toArray());
-        $log->tipo_servidor         = LogR::getTipoServidor();
-        $log->ambiente              = LogR::getAmbiente();
-        $log->debug                 = LogR::getDegub();
-        $log->banco                 = LogR::getBanco();
-        $log->mail_server           = LogR::getMailServer();
-        $log->document_root         = LogR::getDocumentRoot();
-        $log->resolucao_tela        = '';
-        $log->mensagem              = LogR::getExceptionMessage($e);
-        $log->arquivo               = LogR::getExceptionFile($e);
-        $log->codigo_erro           = LogR::getExceptionCode($e);
-        $log->trace_string          = LogR::getExceptionTraceString($e);
+            $log->tipo                  = 'exception';
+            $log->status_request        = LogR::status();
+            $log->site                  = $confsite->nome_site;
+            $log->dominio               = url();
+            $log->sistema_operacional   = LogR::getSistemaOperacional();
+            $log->navegador             = LogR::getBrowser();
+            $log->ipUsuario             = LogR::getIp('usuario');
+            $log->ipServidor            = LogR::getIp('servidor');
+            $log->usuario               = Auth::user()->email;
+            $log->urlOrigem             = LogR::getOrigem();
+            $log->urlDestino            = LogR::getDestino();
+            $log->method                = LogR::getMethod();
+            $log->dados                 = implode(' | ', collect($dados)->toArray());
+            $log->tipo_servidor         = LogR::getTipoServidor();
+            $log->ambiente              = LogR::getAmbiente();
+            $log->debug                 = LogR::getDegub();
+            $log->banco                 = LogR::getBanco();
+            $log->mail_server           = LogR::getMailServer();
+            $log->document_root         = LogR::getDocumentRoot();
+            $log->resolucao_tela        = '';
+            $log->mensagem              = LogR::getExceptionMessage($e);
+            $log->arquivo               = LogR::getExceptionFile($e);
+            $log->codigo_erro           = LogR::getExceptionCode($e);
+            $log->linha                 = LogR::getExceptionLine($e);
+            $log->trace_string          = LogR::getExceptionTraceString($e);
 
-        $log->save();
+            $log->save();
 
-        Log::error($log->toArray());
+            Log::error($log->toArray());
 
-        $assunto        = '[Houston, We Have a Problem] '. $confsite->nome_site;
-        $remetente      = 'noreply@safaricomunicacao.com';
-        $destinatario   = 'pablo.safaricco@gmail.com';
-//        $destinatario   = 'web@safaricomunicacao.com';
+            $assunto        = '[Houston, We Have a Problem] ' . $confsite->nome_site;
+            $remetente      = 'noreply@safaricomunicacao.com';
+            $destinatario   = 'pablo.safaricco@gmail.com';
+            //        $destinatario   = 'web@safaricomunicacao.com';
 
-        $dados = array(
-            'dados' => $log,
-            'hora'  => date('d/m/Y H:m:i')
-        );
+            $dados = array(
+                'dados' => $log,
+                'hora' => date('d/m/Y H:m:i')
+            );
 
-        $view = 'emails.errorlog';
+            $view = 'emails.errorlog';
 
-        Emails::enviarEmail($assunto, $remetente, $destinatario, $dados, $view);
+            Emails::enviarEmail($assunto, $remetente, $destinatario, $dados, $view);
+
+        } catch(\Exception $e){
+
+            Log::emergency($log->toArray());
+
+            $assunto        = '[Houston, We Have a VERY Problem] ' . $confsite->nome_site;
+            $remetente      = 'noreply@safaricomunicacao.com';
+            $destinatario   = 'pablo.safaricco@gmail.com';
+            //        $destinatario   = 'web@safaricomunicacao.com';
+
+            $dados = array(
+                'dados' => $log,
+                'hora' => date('d/m/Y H:m:i')
+            );
+
+            $view = 'emails.errorlog';
+
+            Emails::enviarEmail($assunto, $remetente, $destinatario, $dados, $view);
+        }
 
     }
 
@@ -159,6 +180,16 @@ class LogR extends Model
     public static function getBrowser()
     {
         return Request::capture()->server('HTTP_USER_AGENT');
+    }
+
+    /*
+     * Retorna o sistema operacional com base no browser
+     *
+     * EX: "Linux x86_64"
+     * */
+    public static function getSistemaOperacional()
+    {
+        return explode(';', Request::capture()->server('HTTP_USER_AGENT'))[1];
     }
 
     /*

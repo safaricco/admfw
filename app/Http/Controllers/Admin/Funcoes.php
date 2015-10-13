@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Funcao;
+use App\Models\LogR;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -23,7 +24,15 @@ class Funcoes extends Controller
      */
     public function index()
     {
-        return view('admin/funcoes/funcoes', ['modulos' => Funcao::all()]);
+        try {
+            return view('admin/funcoes/funcoes', ['modulos' => Funcao::all()]);
+        } catch (\Exception $e) {
+
+            LogR::exception('index funcoes', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -33,10 +42,19 @@ class Funcoes extends Controller
      */
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/configuracoes/modulos/store';
-        return view('admin/funcoes/dados', $dados);
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/configuracoes/modulos/store';
+            return view('admin/funcoes/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create funcoes', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -58,10 +76,19 @@ class Funcoes extends Controller
      */
     public function show($id)
     {
-        $dados['put']   = true;
-        $dados['dados'] = Funcao::findOrFail($id);
-        $dados['route'] = 'admin/configuracoes/modulos/atualizar/'.$id;
-        return view('admin/funcoes/dados', $dados);
+        try {
+            $dados['put']   = true;
+            $dados['dados'] = Funcao::findOrFail($id);
+            $dados['route'] = 'admin/configuracoes/modulos/atualizar/'.$id;
+            return view('admin/funcoes/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show funcoes', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -95,22 +122,38 @@ class Funcoes extends Controller
      */
     public function destroy($id)
     {
-        Funcao::destroy($id);
+        try {
+            Funcao::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy funcoes', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Funcao::findOrFail($id);
+        try {
+            $dado         = Funcao::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

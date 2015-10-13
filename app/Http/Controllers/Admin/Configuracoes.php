@@ -25,10 +25,18 @@ class Configuracoes extends Controller
      */
     public function index()
     {
-        $dados['dados'] = Configuracao::findOrFail(1);
-        $dados['route'] = '/admin/configuracoes/site/editar/1';
-        $dados['put']   = true;
-        return view('admin/configuracao/site', $dados);
+        try {
+            $dados['dados'] = Configuracao::findOrFail(1);
+            $dados['route'] = '/admin/configuracoes/site/editar/1';
+            $dados['put']   = true;
+            return view('admin/configuracao/site', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index configurações', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+            return Redirect::back();
+        }
     }
 
     /**
@@ -50,41 +58,50 @@ class Configuracoes extends Controller
             return redirect('admin/configuracoes/site')->withErrors($validacao)->withInput();
         else :
 
-            $config                 = Configuracao::find($id);
+            try {
 
-            $config->nome_site      = $request->nome_site;
+                $config                 = Configuracao::find($id);
 
-            if ($request->hasFile('logo')) :
+                $config->nome_site      = $request->nome_site;
 
-                if ($request->file('logo')->isValid()) :
+                if ($request->hasFile('logo')) :
 
-                    $nomeOriginal   = $request->file('logo')->getClientOriginalName();
-                    $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $request->file('logo')->getClientOriginalExtension();
+                    if ($request->file('logo')->isValid()) :
 
-                    $request->file('logo')->move('uploads/logo', $novoNome);
+                        $nomeOriginal   = $request->file('logo')->getClientOriginalName();
+                        $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $request->file('logo')->getClientOriginalExtension();
 
-                    $config->logo   = $novoNome;
+                        $request->file('logo')->move('uploads/logo', $novoNome);
 
+                        $config->logo   = $novoNome;
+
+                    endif;
                 endif;
-            endif;
 
-            if ($request->hasFile('logo_footer')) :
+                if ($request->hasFile('logo_footer')) :
 
-                if ($request->file('logo_footer')->isValid()) :
+                    if ($request->file('logo_footer')->isValid()) :
 
-                    $nomeOriginal           = $request->file('logo_footer')->getClientOriginalName();
-                    $novoNome               = md5(uniqid($nomeOriginal)) . '.' . $request->file('logo_footer')->getClientOriginalExtension();
+                        $nomeOriginal           = $request->file('logo_footer')->getClientOriginalName();
+                        $novoNome               = md5(uniqid($nomeOriginal)) . '.' . $request->file('logo_footer')->getClientOriginalExtension();
 
-                    $request->file('logo_footer')->move('uploads/logo', $novoNome);
+                        $request->file('logo_footer')->move('uploads/logo', $novoNome);
 
-                    $config->logo_footer    = $novoNome;
+                        $config->logo_footer    = $novoNome;
 
+                    endif;
                 endif;
-            endif;
 
-            $config->save();
+                $config->save();
 
-            session()->flash('flash_message', 'Registro atualizado com sucesso!');
+                session()->flash('flash_message', 'Registro atualizado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($config, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 

@@ -30,7 +30,16 @@ class Perfis extends Controller
      */
     public function index()
     {
-        return view('admin/perfis/perfis', ['perfis' => Perfil::all()]);
+        try {
+            return view('admin/perfis/perfis', ['perfis' => Perfil::all()]);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index perfis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -40,13 +49,21 @@ class Perfis extends Controller
      */
     public function create()
     {
-        $dados['funcoes']   = Funcao::all();
-        $dados['roles']     = Role::all();
-        $dados['put']       = false;
-        $dados['dados']     = '';
-        $dados['permissao'] = '';
-        $dados['route']     = 'admin/configuracoes/perfis/store';
-        return view('admin/perfis/dados', $dados);
+        try {
+            $dados['funcoes']   = Funcao::all();
+            $dados['roles']     = Role::all();
+            $dados['put']       = false;
+            $dados['dados']     = '';
+            $dados['permissao'] = '';
+            $dados['route']     = 'admin/configuracoes/perfis/store';
+            return view('admin/perfis/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('create perfis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -65,28 +82,44 @@ class Perfis extends Controller
             return redirect('admin/configuracoes/perfis/novo')->withErrors($validator)->withInput();
         else :
 
-            $perfil             = new Perfil();
-            $perfil->descricao  = $request->descricao;
-            $perfil->save();
+            try {
+                $perfil             = new Perfil();
+                $perfil->descricao  = $request->descricao;
+                $perfil->save();
 
-            $funcoes = Funcao::all();
+                $funcoes = Funcao::all();
 
-            $cont = 1;
+                $cont = 1;
 
-            foreach ($funcoes as $funcao) :
+                foreach ($funcoes as $funcao) :
 
-                $permissao = new PermissaoPerfil();
+                    try {
+                        $permissao = new PermissaoPerfil();
 
-                $permissao->id_funcao   = $funcao->id_funcao;
-                $permissao->id_perfil   = $perfil->id_perfil;
-                $permissao->id_role     = $request->$cont;
-                $permissao->save();
+                        $permissao->id_funcao   = $funcao->id_funcao;
+                        $permissao->id_perfil   = $perfil->id_perfil;
+                        $permissao->id_role     = $request->$cont;
+                        $permissao->save();
 
-                $cont++;
+                        $cont++;
 
-            endforeach;
+                    } catch (\Exception $e) {
 
-            session()->flash('flash_message', 'Registro gravado com sucesso!');
+                        LogR::exception($permissao, $e);
+                        session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+                    }
+
+                endforeach;
+
+                session()->flash('flash_message', 'Registro gravado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($perfil, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -101,13 +134,22 @@ class Perfis extends Controller
      */
     public function show($id)
     {
-        $dados['funcoes']   = Funcao::all();
-        $dados['roles']     = Role::all();
-        $dados['put']       = true;
-        $dados['dados']     = Perfil::findOrFail($id);
-        $dados['permissao'] = PermissaoPerfil::where('id_perfil', $id)->get();
-        $dados['route']     = 'admin/configuracoes/perfis/atualizar/'.$id;
-        return view('admin/perfis/dados', $dados);
+        try {
+            $dados['funcoes']   = Funcao::all();
+            $dados['roles']     = Role::all();
+            $dados['put']       = true;
+            $dados['dados']     = Perfil::findOrFail($id);
+            $dados['permissao'] = PermissaoPerfil::where('id_perfil', $id)->get();
+            $dados['route']     = 'admin/configuracoes/perfis/atualizar/'.$id;
+            return view('admin/perfis/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show perfis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -138,27 +180,43 @@ class Perfis extends Controller
             return redirect('admin/configuracoes/perfis/editar/'.$id)->withErrors($validator)->withInput();
         else :
 
-            $perfil             = Perfil::findOrFail($id);
-            $perfil->descricao  = $request->descricao;
-            $perfil->save();
+            try {
+                $perfil             = Perfil::findOrFail($id);
+                $perfil->descricao  = $request->descricao;
+                $perfil->save();
 
-            $funcoes = Funcao::all();
+                $funcoes = Funcao::all();
 
-            $cont = 1;
+                $cont = 1;
 
-            foreach ($funcoes as $funcao) :
+                foreach ($funcoes as $funcao) :
 
-                $permissao = PermissaoPerfil::where('id_funcao', $funcao->id_funcao)->where('id_perfil', $perfil->id_perfil)->first();
+                    try {
 
+                        $permissao = PermissaoPerfil::where('id_funcao', $funcao->id_funcao)->where('id_perfil', $perfil->id_perfil)->first();
 
-                $permissao->id_role = $request->$cont;
-                $permissao->save();
+                        $permissao->id_role = $request->$cont;
+                        $permissao->save();
 
-                $cont++;
+                        $cont++;
 
-            endforeach;
+                    } catch (\Exception $e) {
 
-            session()->flash('flash_message', 'Registro alterado com sucesso!');
+                        LogR::exception($permissao, $e);
+                        session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+                    }
+
+                endforeach;
+
+                session()->flash('flash_message', 'Registro alterado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($perfil, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -173,35 +231,52 @@ class Perfis extends Controller
      */
     public function destroy($id)
     {
-        // destruindo vinculo entre as permissões e o perfil
-        $permissao = PermissaoPerfil::where('id_perfil', $id)->get();
-        foreach($permissao as $perm) :
-            PermissaoPerfil::destroy($perm->id_permissao_perfil);
-        endforeach;
+        try {
+            // destruindo vinculo entre as permissões e o perfil
+            $permissao = PermissaoPerfil::where('id_perfil', $id)->get();
+            foreach($permissao as $perm) :
+                PermissaoPerfil::destroy($perm->id_permissao_perfil);
+            endforeach;
 
-        // destruindo vinculo entre perfil e usuário
-        $peruser = PerfilUser::where('id_perfil', $id)->get();
-        foreach($peruser as $perf) :
-            PerfilUser::destroy($perf->id_perfil_user);
-        endforeach;
+            // destruindo vinculo entre perfil e usuário
+            $peruser = PerfilUser::where('id_perfil', $id)->get();
+            foreach($peruser as $perf) :
+                PerfilUser::destroy($perf->id_perfil_user);
+            endforeach;
 
-        // destruindo o perfil
-        Perfil::destroy($id);
+            // destruindo o perfil
+            Perfil::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso!');
+            session()->flash('flash_message', 'Registro apagado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy perfis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Perfil::findOrFail($id);
 
-        $dado->status = $status;
+        try {
+            $dado         = Perfil::findOrFail($id);
 
-        $dado->save();
+            $dado->status = $status;
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            $dado->save();
+
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

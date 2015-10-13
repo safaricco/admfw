@@ -27,12 +27,21 @@ class Sobre extends Controller
 
     public function show($id)
     {
-        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
-        $dados['put']       = true;
-        $dados['dados']     = Sobres::findOrFail($id);;
-        $dados['route']     = 'admin/sobre/atualizar/'.$id;
+        try {
+            $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
+            $dados['put']       = true;
+            $dados['dados']     = Sobres::findOrFail($id);;
+            $dados['route']     = 'admin/sobre/atualizar/'.$id;
 
-        return view('admin/sobre/dados', $dados);
+            return view('admin/sobre/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show sobre', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function update(Request $request, $id)
@@ -40,66 +49,34 @@ class Sobre extends Controller
         $validation = Validator::make($request->all(), [
             'titulo'    => 'required|string',
             'texto'     => 'required|string',
-            'imagem' => 'image|mimes:jpeg,bmp,png,jpg'
+            'imagens[]' => 'image|mimes:jpeg,bmp,png,jpg'
         ]);
 
         if ($validation->fails()) :
             return redirect('admin/sobre/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $sobre = Sobres::findOrFail($id);
+            try {
+                $sobre = Sobres::findOrFail($id);
 
-            $sobre->titulo    = $request->titulo;
-            $sobre->texto     = $request->texto;
+                $sobre->titulo    = $request->titulo;
+                $sobre->texto     = $request->texto;
 
-            $sobre->save();
+                $sobre->save();
 
-            // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO NÃO ESTÁ CORROMPIDO
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                $nomeTipo   = TipoMidia::findOrFail($this->tipo_midia)->descricao;                                                // A VARIÁVEL $nomeTipo CONTÉM O NOME DO TIPO DA MIDIA E SERÁ USADA COMO NOME DA PASTA DENTRO DA PASTA UPLOADS
-
-                $midia      = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first();
-
-                if (count($midia) < 1) :
-
-                    // CRIANDO O REGISTRO PAI NA TABELA MIDIA
-                    $midia                      = new Midia();
-                    $midia->id_tipo_midia       = $this->tipo_midia;
-                    $midia->id_registro_tabela  = $sobre->id_sobre;
-                    $midia->descricao           = $nomeTipo . ' criado automaticamente';
-                    $midia->save();
+                    Midia::uploadMultiplo($this->tipo_midia, $id);
 
                 endif;
 
-                foreach ($request->file('imagens') as $img) :
+                session()->flash('flash_message', 'Sobre alterada com sucesso!');
+            } catch (\Exception $e) {
 
-                    $nomeOriginal   = $img->getClientOriginalName();                                            // PEGANDO O NOME ORIGINAL DO ARQUIVO A SER UPADO
+                LogR::exception($sobre, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
 
-                    $novoNome       = md5(uniqid($nomeOriginal)) . '.' . $img->getClientOriginalExtension();    // MONTANDO O NOVO NOME COM MD5 + IDUNICO BASEADO NO NOME ORIGINAL E CONCATENANDO COM A EXTENÇÃO DO ARQUIVO
-
-                    $img->move('uploads/' . $nomeTipo, $novoNome);                                              // MOVENDO O ARQUIVO PARA A PASTA UPLOADS/"TIPO DA MIDIA"
-
-                    $imagem         = Multimidia::where('id_midia', $midia->id_midia);
-
-                    if (isset($imagem))
-                        $imagem = new Multimidia();
-
-                    // GRAVANDO NA TABELA MULTIMIDIA
-
-                    // PREPARANDO DADOS PARA GRAVAR NA TABELA MULTIMIDIA
-                    $imagem->id_midia   = $midia->id_midia;
-                    $imagem->imagem     = $novoNome;
-                    $imagem->ordem      = $request->ordem;
-                    $imagem->video      = $request->video;
-
-                    $imagem->save();
-
-                endforeach;
-
-            endif;
-
-            session()->flash('flash_message', 'Sobre alterada com sucesso!');
+            }
 
             return Redirect::back();
         endif; 

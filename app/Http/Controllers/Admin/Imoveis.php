@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Imovel;
+use App\Models\LogR;
 use App\Models\Midia;
 use App\Models\Multimidia;
 use App\Models\TipoMidia;
@@ -31,7 +32,16 @@ class Imoveis extends Controller
      */
     public function index()
     {
-        return view('admin/imoveis/imoveis', ['imoveis' => Imovel::all()]);
+        try {
+            return view('admin/imoveis/imoveis', ['imoveis' => Imovel::all()]);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index imoveis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -41,10 +51,19 @@ class Imoveis extends Controller
      */
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/imoveis/store';
-        return view('admin/imoveis/dados', $dados);
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/imoveis/store';
+            return view('admin/imoveis/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create imoveis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -102,58 +121,66 @@ class Imoveis extends Controller
             return redirect('admin/imoveis/novo')->withErrors($validacao)->withInput();
         else :
 
-            $imovel = new Imovel();
+            try {
+                $imovel = new Imovel();
 
-            $imovel->contrato               = $request->contrato;
-            $imovel->ref                    = $request->ref;
-            $imovel->titulo                 = $request->titulo;
-            $imovel->descricao              = $request->descricao;
-            $imovel->obs                    = $request->obs;
-            $imovel->valor                  = $request->valor;
-            $imovel->rua                    = $request->rua;
-            $imovel->bairro                 = $request->bairro;
-            $imovel->cidade                 = $request->cidade;
-            $imovel->estado                 = $request->estado;
-            $imovel->numero                 = $request->numero;
-            $imovel->cep                    = $request->cep;
-            $imovel->latitude               = $request->latitude;
-            $imovel->longitude              = $request->longitude;
-            $imovel->dimensoes              = $request->dimensoes;
-            $imovel->area_terreno           = $request->area_terreno;
-            $imovel->area_construida        = $request->area_construida;
-            $imovel->area_privativa         = $request->area_privativa;
-            $imovel->area_util              = $request->area_util;
-            $imovel->andares                = $request->andares;
-            $imovel->elevadores             = $request->elevadores;
-            $imovel->quartos                = $request->quartos;
-            $imovel->suites                 = $request->suites;
-            $imovel->garagem                = $request->garagem;
-            $imovel->banheiros              = $request->banheiros;
-            $imovel->detalhes               = $request->detalhes;
-            $imovel->valor_iptu             = $request->valor_iptu;
-            $imovel->sala_jantar            = $request->sala_jantar;
-            $imovel->sala_estar             = $request->sala_estar;
-            $imovel->sala_tv                = $request->sala_tv;
-            $imovel->cozinha                = $request->cozinha;
-            $imovel->area_de_servico        = $request->area_de_servico;
-            $imovel->dependencia_empregada  = $request->dependencia_empregada;
-            $imovel->gas_central            = $request->gas_central;
-            $imovel->playground             = $request->playground;
-            $imovel->lavabo                 = $request->lavabo;
-            $imovel->churrasqueira          = $request->churrasqueira;
-            $imovel->salao_festas           = $request->salao_festas;
-            $imovel->sacada                 = $request->sacada;
-            $imovel->portao_eletronico      = $request->portao_eletronico;
+                $imovel->contrato               = $request->contrato;
+                $imovel->ref                    = $request->ref;
+                $imovel->titulo                 = $request->titulo;
+                $imovel->descricao              = $request->descricao;
+                $imovel->obs                    = $request->obs;
+                $imovel->valor                  = $request->valor;
+                $imovel->rua                    = $request->rua;
+                $imovel->bairro                 = $request->bairro;
+                $imovel->cidade                 = $request->cidade;
+                $imovel->estado                 = $request->estado;
+                $imovel->numero                 = $request->numero;
+                $imovel->cep                    = $request->cep;
+                $imovel->latitude               = $request->latitude;
+                $imovel->longitude              = $request->longitude;
+                $imovel->dimensoes              = $request->dimensoes;
+                $imovel->area_terreno           = $request->area_terreno;
+                $imovel->area_construida        = $request->area_construida;
+                $imovel->area_privativa         = $request->area_privativa;
+                $imovel->area_util              = $request->area_util;
+                $imovel->andares                = $request->andares;
+                $imovel->elevadores             = $request->elevadores;
+                $imovel->quartos                = $request->quartos;
+                $imovel->suites                 = $request->suites;
+                $imovel->garagem                = $request->garagem;
+                $imovel->banheiros              = $request->banheiros;
+                $imovel->detalhes               = $request->detalhes;
+                $imovel->valor_iptu             = $request->valor_iptu;
+                $imovel->sala_jantar            = $request->sala_jantar;
+                $imovel->sala_estar             = $request->sala_estar;
+                $imovel->sala_tv                = $request->sala_tv;
+                $imovel->cozinha                = $request->cozinha;
+                $imovel->area_de_servico        = $request->area_de_servico;
+                $imovel->dependencia_empregada  = $request->dependencia_empregada;
+                $imovel->gas_central            = $request->gas_central;
+                $imovel->playground             = $request->playground;
+                $imovel->lavabo                 = $request->lavabo;
+                $imovel->churrasqueira          = $request->churrasqueira;
+                $imovel->salao_festas           = $request->salao_festas;
+                $imovel->sacada                 = $request->sacada;
+                $imovel->portao_eletronico      = $request->portao_eletronico;
 
-            $imovel->save();
+                $imovel->save();
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $imovel->id_imovel);
+                    Midia::uploadMultiplo($this->tipo_midia, $imovel->id_imovel);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Registro gravado com sucesso!');
+                session()->flash('flash_message', 'Registro gravado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($imovel, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -168,13 +195,22 @@ class Imoveis extends Controller
      */
     public function show($id)
     {
-        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
-        $dados['destacada'] = Midia::destacada($this->tipo_midia, $id);
-        $dados['put']       = true;
-        $dados['dados']     = Imovel::findOrFail($id);
-        $dados['route']     = 'admin/imoveis/atualizar/'.$id;
+        try {
+            $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
+            $dados['destacada'] = Midia::destacada($this->tipo_midia, $id);
+            $dados['put']       = true;
+            $dados['dados']     = Imovel::findOrFail($id);
+            $dados['route']     = 'admin/imoveis/atualizar/'.$id;
 
-        return view('admin/imoveis/dados', $dados);
+            return view('admin/imoveis/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show imoveis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     /**
@@ -244,53 +280,62 @@ class Imoveis extends Controller
             return redirect('admin/imoveis/editar/' . $id)->withErrors($validacao)->withInput();
         else :
 
-            $imovel = new Imovel();
+            try {
+                $imovel = new Imovel();
 
-            $imovel->contrato               = $request->contrato;
-            $imovel->ref                    = $request->ref;
-            $imovel->titulo                 = $request->titulo;
-            $imovel->descricao              = $request->descricao;
-            $imovel->obs                    = $request->obs;
-            $imovel->valor                  = $request->valor;
-            $imovel->rua                    = $request->rua;
-            $imovel->bairro                 = $request->bairro;
-            $imovel->cidade                 = $request->cidade;
-            $imovel->estado                 = $request->estado;
-            $imovel->numero                 = $request->numero;
-            $imovel->cep                    = $request->cep;
-            $imovel->latitude               = $request->latitude;
-            $imovel->longitude              = $request->longitude;
-            $imovel->dimensoes              = $request->dimensoes;
-            $imovel->area_terreno           = $request->area_terreno;
-            $imovel->area_util              = $request->area_util;
-            $imovel->andares                = $request->andares;
-            $imovel->elevadores             = $request->elevadores;
-            $imovel->quartos                = $request->quartos;
-            $imovel->suites                 = $request->suites;
-            $imovel->garagem                = $request->garagem;
-            $imovel->banheiros              = $request->banheiros;
-            $imovel->valor_iptu             = $request->valor_iptu;
-            $imovel->sala_jantar            = $request->sala_jantar;
-            $imovel->sala_estar             = $request->sala_estar;
-            $imovel->sala_tv                = $request->sala_tv;
-            $imovel->area_de_servico        = $request->area_de_servico;
-            $imovel->dependencia_empregada  = $request->dependencia_empregada;
-            $imovel->gas_central            = $request->gas_central;
-            $imovel->playground             = $request->playground;
-            $imovel->churrasqueira          = $request->churrasqueira;
-            $imovel->salao_festas           = $request->salao_festas;
-            $imovel->sacada                 = $request->sacada;
-            $imovel->portao_eletronico      = $request->portao_eletronico;
+                $imovel->contrato               = $request->contrato;
+                $imovel->ref                    = $request->ref;
+                $imovel->titulo                 = $request->titulo;
+                $imovel->descricao              = $request->descricao;
+                $imovel->obs                    = $request->obs;
+                $imovel->valor                  = $request->valor;
+                $imovel->rua                    = $request->rua;
+                $imovel->bairro                 = $request->bairro;
+                $imovel->cidade                 = $request->cidade;
+                $imovel->estado                 = $request->estado;
+                $imovel->numero                 = $request->numero;
+                $imovel->cep                    = $request->cep;
+                $imovel->latitude               = $request->latitude;
+                $imovel->longitude              = $request->longitude;
+                $imovel->dimensoes              = $request->dimensoes;
+                $imovel->area_terreno           = $request->area_terreno;
+                $imovel->area_util              = $request->area_util;
+                $imovel->andares                = $request->andares;
+                $imovel->elevadores             = $request->elevadores;
+                $imovel->quartos                = $request->quartos;
+                $imovel->suites                 = $request->suites;
+                $imovel->garagem                = $request->garagem;
+                $imovel->banheiros              = $request->banheiros;
+                $imovel->valor_iptu             = $request->valor_iptu;
+                $imovel->sala_jantar            = $request->sala_jantar;
+                $imovel->sala_estar             = $request->sala_estar;
+                $imovel->sala_tv                = $request->sala_tv;
+                $imovel->area_de_servico        = $request->area_de_servico;
+                $imovel->dependencia_empregada  = $request->dependencia_empregada;
+                $imovel->gas_central            = $request->gas_central;
+                $imovel->playground             = $request->playground;
+                $imovel->churrasqueira          = $request->churrasqueira;
+                $imovel->salao_festas           = $request->salao_festas;
+                $imovel->sacada                 = $request->sacada;
+                $imovel->portao_eletronico      = $request->portao_eletronico;
 
-            $imovel->save();
+                $imovel->save();
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $imovel->id_imovel);
+                    Midia::uploadMultiplo($this->tipo_midia, $imovel->id_imovel);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Registro gravado com sucesso!');
+                session()->flash('flash_message', 'Registro gravado com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($imovel, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+                return Redirect::back();
+            }
 
             return Redirect::back();
 
@@ -305,24 +350,39 @@ class Imoveis extends Controller
      */
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Imovel::destroy($id);
+            Imovel::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy imoveis', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Imovel::findOrFail($id);
+        try {
+            $dado         = Imovel::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
