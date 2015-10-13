@@ -3,14 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Depoimentos;
+use App\Models\LogR;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
 class Depoimento extends Controller
 {
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
     /**
      * Display a listing of the resource.
      *

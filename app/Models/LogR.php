@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Log;
 
 class LogR extends Model
 {
@@ -11,14 +13,89 @@ class LogR extends Model
     protected $fillable     = ['tipo', 'site', 'dominio', 'sistema_operacional', 'navegador', 'ip', 'usuario', 'url', 'resolucao_tela', 'mensagem', 'arquivo', 'codigo_erro', 'trace_string'];
     protected $primaryKey   = 'id_log';
 
-    public static function register()
+    public static function register($operacao)
     {
+        try {
 
+            $log                        = new LogR();
+
+            $log->tipo                  = 'registro';
+            $log->operacao              = $operacao;
+            $log->status_request        = LogR::status();
+            $log->dominio               = url();
+            $log->sistema_operacional   = '';
+            $log->navegador             = LogR::getBrowser();
+            $log->ipUsuario             = LogR::getIp('usuario');
+            $log->ipServidor            = LogR::getIp('servidor');
+            $log->usuario               = Auth::user()->email;
+            $log->urlOrigem             = LogR::getOrigem();
+            $log->urlDestino            = LogR::getDestino();
+            $log->method                = LogR::getMethod();
+            $log->tipo_servidor         = LogR::getTipoServidor();
+            $log->ambiente              = LogR::getAmbiente();
+            $log->debug                 = LogR::getDegub();
+            $log->resolucao_tela        = '';
+
+            $log->save();
+
+            Log::info(collect($log)->toArray());
+
+        } catch(\Exception $e) {
+
+            LogR::exception(['erro' => 'erro de registro'], $e);
+
+        }
     }
 
     public static function exception($dados, $e = null)
     {
-        dd(LogR::getBanco());
+        $confsite                   = Configuracao::findOrFail(1);
+
+        $log                        = new LogR();
+
+        $log->tipo                  = 'exception';
+        $log->status_request        = LogR::status();
+        $log->site                  = $confsite->nome_site;
+        $log->dominio               = url();
+        $log->sistema_operacional   = '';
+        $log->navegador             = LogR::getBrowser();
+        $log->ipUsuario             = LogR::getIp('usuario');
+        $log->ipServidor            = LogR::getIp('servidor');
+        $log->usuario               = Auth::user()->email;
+        $log->urlOrigem             = LogR::getOrigem();
+        $log->urlDestino            = LogR::getDestino();
+        $log->method                = LogR::getMethod();
+        $log->dados                 = implode(' | ', collect($dados)->toArray());
+        $log->tipo_servidor         = LogR::getTipoServidor();
+        $log->ambiente              = LogR::getAmbiente();
+        $log->debug                 = LogR::getDegub();
+        $log->banco                 = LogR::getBanco();
+        $log->mail_server           = LogR::getMailServer();
+        $log->document_root         = LogR::getDocumentRoot();
+        $log->resolucao_tela        = '';
+        $log->mensagem              = LogR::getExceptionMessage($e);
+        $log->arquivo               = LogR::getExceptionFile($e);
+        $log->codigo_erro           = LogR::getExceptionCode($e);
+        $log->trace_string          = LogR::getExceptionTraceString($e);
+
+        $log->save();
+
+        Log::error($log->toArray());
+
+        $assunto        = '[Houston, We Have a Problem] '. $confsite->nome_site;
+        $remetente      = 'noreply@safaricomunicacao.com';
+        $destinatario   = 'pablo.safaricco@gmail.com';
+//        $destinatario   = 'web@safaricomunicacao.com';
+
+        $dados = array(
+            'dados' => $log,
+            'hora'  => date('d/m/Y H:m:i')
+        );
+
+        $view = 'emails.errorlog';
+
+        Emails::enviarEmail($assunto, $remetente, $destinatario, $dados, $view);
+
     }
 
     /*
@@ -89,7 +166,7 @@ class LogR extends Model
      *
      * "/admin/banners/novo"
      * */
-    public static function getUrl()
+    public static function getOrigem()
     {
         return Request::capture()->url();
     }
@@ -134,7 +211,7 @@ class LogR extends Model
      * "Apache/2.4.7 (Ubuntu)"
      *
      * */
-    public static function getApache()
+    public static function getTipoServidor()
     {
         return Request::capture()->server('SERVER_SOFTWARE');
     }

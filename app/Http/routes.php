@@ -49,6 +49,24 @@ Route::group(['prefix' => 'admin/', 'middleware' => 'auth.aux'], function(){
 
     });
 
+    Route::group(['prefix' => 'destaques/'], function(){
+        Route::get('listar', 'Admin\Destaques@index');
+        Route::get('novo', 'Admin\Destaques@create');
+        Route::post('store', 'Admin\Destaques@store');
+        Route::get('editar/{id}', 'Admin\Destaques@show@{id}');
+        Route::put('atualizar/{id}', 'Admin\Destaques@update@{id}');
+        Route::post('destroy/{id}', 'Admin\Destaques@destroy@{id}');
+    });
+
+    Route::group(['prefix' => 'equipe/'], function(){
+        Route::get('listar', 'Admin\Equipe@index');
+        Route::get('novo', 'Admin\Equipe@create');
+        Route::post('store', 'Admin\Equipe@store');
+        Route::get('editar/{id}', 'Admin\Equipe@show@{id}');
+        Route::put('atualizar/{id}', 'Admin\Equipe@update@{id}');
+        Route::post('destroy/{id}', 'Admin\Equipe@destroy@{id}');
+    });
+
     Route::group(['prefix' => 'noticias/'], function(){
         Route::get('listar', 'Admin\Noticias@index');
         Route::get('novo', 'Admin\Noticias@create');

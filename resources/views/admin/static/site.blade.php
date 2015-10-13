@@ -107,7 +107,7 @@
                   
                 </li>
 
-                <!-- DASHBOARD -->
+                {{--DASHBOARD--}}
                 <li class="{{ Request::is('admin/dashboard') ? 'active' : ''  }}">
                     <a href="{{ url('admin/dashboard') }}">
                         <i class="icon-speedometer"></i>
@@ -116,8 +116,8 @@
                     </a>
                 </li>
 
+                {{--BANNERS--}}
                 @if(Access::permissao('banners'))
-                    <!-- BANNERS -->
                     <li class="{{ Request::is('admin/banners/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
                             <i class="icon-picture"></i>
@@ -137,8 +137,8 @@
                 @endif
 
 
+                {{--NOTICIAS--}}
                 @if(Access::permissao('notícias'))
-                    <!-- NOTICIAS -->
                     <li class="{{ Request::is('admin/noticias/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
                             <i class="icon-note"></i>
@@ -157,8 +157,8 @@
                     </li>
                 @endif
 
+                {{--CATEGORIAS--}}
                 @if(Access::permissao('categorias'))
-                    <!-- CATEGORIAS -->
                     <li class="{{ Request::is('admin/categorias/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
                             <i class="icon-check"></i>
@@ -177,8 +177,8 @@
                     </li>
                 @endif
 
+                {{--SUBCATEGORIAS--}}
                 @if(Access::permissao('subcategorias'))
-                    <!-- SUBCATEGORIAS -->
                     <li class="{{ Request::is('admin/subcategorias/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
                             <i class="icon-arrow-down"></i>
@@ -197,8 +197,8 @@
                     </li>
                 @endif
 
+                {{--COMENTARIOS--}}
                 @if(Access::permissao('comentários'))
-                    <!-- COMENTARIOS -->
                     <li class="{{ Request::is('admin/comentarios/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
                             <i class="icon-bubbles"></i>
@@ -235,8 +235,8 @@
                     </li>
                 @endif
 
+                {{--SOBRE--}}
                 @if(Access::permissao('sobre'))
-                    <!-- SOBRE -->
                     <li class="{{ Request::is('admin/sobre/*') ? 'active open' : ''  }}">
                         <a href="{{ url('admin/sobre/editar/1') }}">
                             <i class="icon-doc"></i>
@@ -246,8 +246,8 @@
                     </li>
                 @endif
 
+                {{--PROGRAMA--}}
                 @if(Access::permissao('programas'))
-                    <!-- PROGRAMA -->
                     <li class="{{ Request::is('admin/programas/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
                             <i class="icon-screen-desktop"></i>
@@ -266,7 +266,27 @@
                     </li>
                 @endif
 
-                <!-- PRODUTOS -->
+                {{--EQUIPE--}}
+                @if(Access::permissao('equipe'))
+                    <li class="{{ Request::is('admin/equipe/*') ? 'active open' : ''  }}">
+                        <a href="javascript:;">
+                            <i class="icon-users"></i>
+                            <span class="title">Equipe</span>
+                            <span class="selected"></span>
+                            <span class="arrow open"></span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="{{ Request::is('admin/equipe/listar') ? 'active' : ''  }}">
+                                <a href="{{url('admin/equipe/listar/')}}"> Listar </a>
+                            </li>
+                            <li class="{{ Request::is('admin/equipe/novo') ? 'active' : ''  }}">
+                                <a href="{{url('admin/equipe/novo/')}}"> Novo </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
+                {{--PRODUTOS--}}
                 @if(Access::permissao('produtos'))
                     <li class="{{ Request::is('admin/produtos/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -286,7 +306,7 @@
                     </li>
                 @endif
 
-                <!-- SERVICOS -->
+                {{--SERVICOS--}}
                 @if(Access::permissao('servicos'))
                     <li class="{{ Request::is('admin/servicos/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -306,7 +326,7 @@
                     </li>
                 @endif
 
-                <!-- IMOVEIS -->
+                {{--IMOVEIS--}}
                 @if(Access::permissao('imoveis'))
                     <li class="{{ Request::is('admin/imoveis/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -326,7 +346,7 @@
                     </li>
                 @endif
 
-                <!-- PATROCINADOR -->
+                {{--PATROCINADOR--}}
                 @if(Access::permissao('patrocinadores'))
                     <li class="{{ Request::is('admin/patrocinadores/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -346,7 +366,28 @@
                     </li>
                 @endif
 
-                <!-- DICAS -->
+                {{--DESTAQUES--}}
+                @if(Access::permissao('destaques'))
+                    <li class="{{ Request::is('admin/destaques/*') ? 'active open' : ''  }}">
+                        <a href="javascript:;">
+                            <i class="icon-star"></i>
+                            <span class="title">Destaques</span>
+                            <span class="selected"></span>
+                            <span class="arrow open"></span>
+                        </a>
+                        <ul class="sub-menu">
+                            <li class="{{ Request::is('admin/destaques/listar') ? 'active' : ''  }}">
+                                <a href="{{url('admin/destaques/listar/')}}"> Listar </a>
+                            </li>
+                            <li class="{{ Request::is('admin/destaques/novo') ? 'active' : ''  }}">
+                                <a href="{{url('admin/destaques/novo/')}}"> Novo </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
+
+                {{--DICAS--}}
                 @if(Access::permissao('dicas'))
                     <li class="{{ Request::is('admin/dicas/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -366,7 +407,7 @@
                     </li>
                 @endif
 
-                <!-- EVENTOS -->
+                {{--EVENTOS--}}
                 @if(Access::permissao('eventos'))
                     <li class="{{ Request::is('admin/eventos/*') ? 'active' : ''  }}">
                         <a href="javascript:;">
@@ -386,7 +427,7 @@
                     </li>
                 @endif
 
-                <!-- DEPOIMENTOS -->
+                {{--DEPOIMENTOS--}}
                 @if(Access::permissao('depoimentos'))
                     <li class="{{ Request::is('admin/depoimentos/*') ? 'active' : ''  }}">
                         <a href="javascript:;">
@@ -406,7 +447,7 @@
                     </li>
                 @endif
 
-                <!-- NEWSLETTER -->
+                {{--NEWSLETTER--}}
                 @if(Access::permissao('newsletter'))
                     <li class="{{ Request::is('admin/newsletter/*') ? 'active' : ''  }}">
                         <a href="{{ url('admin/newsletter/listar') }}">
@@ -417,7 +458,7 @@
                     </li>
                 @endif
 
-                <!-- GALERIA FOTOS -->
+                {{--GALERIA FOTOS--}}
                 @if(Access::permissao('fotos'))
                     <li class="{{ Request::is('admin/fotos/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -437,7 +478,7 @@
                     </li>
                 @endif
 
-                <!-- GALERIA VIDEOS -->
+                {{--GALERIA VIDEOS--}}
                 @if(Access::permissao('videos'))
                     <li class="{{ Request::is('admin/videos/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -457,7 +498,7 @@
                     </li>
                 @endif
 
-                <!-- AJUDA CADASTRO -->
+                {{--AJUDA CADASTRO--}}
                 @if(Access::permissao('ajuda'))
                     <li class="{{ Request::is('admin/ajuda/*') ? 'active open' : ''  }}">
                         <a href="javascript:;">
@@ -499,10 +540,10 @@
                     </li>
                 {{--@endif--}}
 
-                <!-- CONFIGURACOES -->
+                {{--CONFIGURACOES--}}
                 <li class="{{ Request::is('admin/configuracoes/*') ? 'active open' : ''  }}">
                     <a href="javascript:;">
-                        <i class="icon-question"></i>
+                        <i class="icon-wrench"></i>
                         <span class="title">Configurações</span>
                         <span class="selected"></span>
                         <span class="arrow open"></span>
@@ -601,12 +642,13 @@
 
 
     <div class="page-footer">
-    <div class="page-footer-inner">
-         2015 &copy; {{ $confsite->nome_site }}. <a href="" title="" target="_blank">safaricomunicacao.com</a>
-    </div>
-    <div class="scroll-to-top">
-        <i class="icon-arrow-up"></i>
+        <div class="page-footer-inner">
+             2015 &copy; {{ $confsite->nome_site }}. <a href="" title="" target="_blank">safaricomunicacao.com</a>
+        </div>
+        <div class="scroll-to-top">
+            <i class="icon-arrow-up"></i>
 
+        </div>
     </div>
 </div>
 

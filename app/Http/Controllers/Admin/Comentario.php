@@ -5,15 +5,22 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Comentarios;
 use App\Models\Configuracao;
 use App\Models\Emails;
+use App\Models\LogR;
 use App\Models\StatusComentario;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 
 class Comentario extends Controller
 {
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
     /**
      * Display a listing of the resource.
      *

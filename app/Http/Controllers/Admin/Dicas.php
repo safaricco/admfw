@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\LogR;
 use App\Models\Midia;
 use App\Models\Multimidia;
 use App\Models\TipoMidia;
@@ -12,12 +13,19 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
 
 class Dicas extends Controller
 {
     public $tipo_midia = 5;
+
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
 
     public function index()
     {

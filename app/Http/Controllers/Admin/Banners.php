@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 use League\Flysystem\Exception;
 
@@ -21,12 +22,16 @@ class Banners extends Controller
 {
     public $tipo_midia = 1;
 
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
     public function index()
     {
         $dados['banners']  = Banner::all();
         return view('admin/banners/banners', $dados);
     }
-
 
     public function create()
     {
@@ -38,7 +43,7 @@ class Banners extends Controller
 
     public function store(Request $request)
     {
-          $validation = Validator::make($request->all(), [
+        $validation = Validator::make($request->all(), [
             'titulo'    => 'required|string',
             'texto'     => 'required|string',
             'link'      => 'string',
@@ -54,7 +59,7 @@ class Banners extends Controller
 
                 $banner = new Banner();
 
-                $banner->tiatulo         = $request->titulo;
+                $banner->titulo         = $request->titulo;
                 $banner->texto          = $request->texto;
                 $banner->link           = $request->link;
                 $banner->data_inicio    = date('Y-m-d');
@@ -71,10 +76,8 @@ class Banners extends Controller
 
             } catch (\Exception $e) {
 
-                dd($banner);
-//                LogR::exception();
-//                dd($e->getPrevious());
-//                session()->flash('flash_message', $e);
+                LogR::exception($banner, $e);
+                session()->flash('flash_message', 'Algum problema ocorreu!. ' . $e->getMessage());
 
             }
 
