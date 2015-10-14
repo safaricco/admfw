@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\LogR;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Spatie\LaravelAnalytics\LaravelAnalytics;
 
 
 class Dashboard extends Controller
 {
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,8 +31,16 @@ class Dashboard extends Controller
 //        $analyticsData->setSiteId('ga:UA-61838331-1');
 //        $analyticsData->getVisitorsAndPageViews();
 //        dd($analyticsData);
+        try{
+            return view('admin/dashboard');
 
-        return view('admin/dashboard');
+        } catch (\Exception $e) {
+
+            LogR::exception('index dashboard', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return view('admin/dashboard');
+        }
     }
 
     /**

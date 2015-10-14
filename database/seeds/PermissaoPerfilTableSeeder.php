@@ -38,6 +38,8 @@ class PermissaoPerfilTableSeeder extends Seeder
         DB::table('permissao_perfil')->insert(['id_funcao' => 24, 'id_perfil' => 1, 'id_role' => 2]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 25, 'id_perfil' => 1, 'id_role' => 2]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 27, 'id_perfil' => 1, 'id_role' => 2]);
+        DB::table('permissao_perfil')->insert(['id_funcao' => 28, 'id_perfil' => 1, 'id_role' => 2]);
+        DB::table('permissao_perfil')->insert(['id_funcao' => 29, 'id_perfil' => 1, 'id_role' => 2]);
 
 
         /*
@@ -74,5 +76,7 @@ class PermissaoPerfilTableSeeder extends Seeder
         DB::table('permissao_perfil')->insert(['id_funcao' => 24, 'id_perfil' => 2, 'id_role' => 3]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 25, 'id_perfil' => 2, 'id_role' => 3]);
         DB::table('permissao_perfil')->insert(['id_funcao' => 27, 'id_perfil' => 2, 'id_role' => 3]);
+        DB::table('permissao_perfil')->insert(['id_funcao' => 29, 'id_perfil' => 2, 'id_role' => 3]);
+        DB::table('permissao_perfil')->insert(['id_funcao' => 28, 'id_perfil' => 2, 'id_role' => 3]);
     }
 }

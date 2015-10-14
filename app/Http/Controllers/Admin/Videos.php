@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\LogR;
 use App\Models\Video;
 use App\Models\Midia;
 use App\Models\Multimidia;
@@ -12,24 +13,48 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
 class Videos extends Controller
 {
     public $tipo_midia = 18;
 
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
     public function index()
     {
-        $dados['videos']  = Video::all();
-        return view('admin/videos/videos', $dados);
+        try {
+            $dados['videos']  = Video::all();
+            return view('admin/videos/videos', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index videos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/videos/store';
-        return view('admin/videos/dados', $dados);
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/videos/store';
+            return view('admin/videos/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create videos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function store(Request $request)
@@ -45,21 +70,29 @@ class Videos extends Controller
             return redirect('admin/videos/novo')->withErrors($validation)->withInput();
         else :
 
-            $video = new Video();
+            try {
+                $video = new Video();
 
-            $video->titulo    = $request->titulo;
-            $video->texto     = $request->texto;
-            $video->data      = date('Y-m-d');
+                $video->titulo    = $request->titulo;
+                $video->texto     = $request->texto;
+                $video->data      = date('Y-m-d');
 
-            $video->save();
+                $video->save();
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $video->id_servico);
+                    Midia::uploadMultiplo($this->tipo_midia, $video->id_servico);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Galerias cadastrada com sucesso!');
+                session()->flash('flash_message', 'Galerias cadastrada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($video, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -69,13 +102,22 @@ class Videos extends Controller
 
     public function show($id)
     {
-        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
-        $dados['destacada'] = Midia::destacada($this->tipo_midia, $id);
-        $dados['put']       = true;
-        $dados['dados']     = Video::findOrFail($id);
-        $dados['route']     = 'admin/videos/atualizar/'.$id;
+        try {
+            $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
+            $dados['destacada'] = Midia::destacada($this->tipo_midia, $id);
+            $dados['put']       = true;
+            $dados['dados']     = Video::findOrFail($id);
+            $dados['route']     = 'admin/videos/atualizar/'.$id;
 
-        return view('admin/videos/dados', $dados);
+            return view('admin/videos/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show videos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
 
@@ -96,20 +138,28 @@ class Videos extends Controller
             return redirect('admin/videos/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $video           = Video::findOrFail($id);
+            try {
+                $video           = Video::findOrFail($id);
 
-            $video->titulo   = $request->titulo;
-            $video->texto    = $request->texto;
+                $video->titulo   = $request->titulo;
+                $video->texto    = $request->texto;
 
-            $video->save();
+                $video->save();
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $video->id_servico);
+                    Midia::uploadMultiplo($this->tipo_midia, $video->id_servico);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Galeria alterada com sucesso!');
+                session()->flash('flash_message', 'Galeria alterada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($video, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
         endif;
@@ -118,25 +168,40 @@ class Videos extends Controller
 
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Video::destroy($id);
+            Video::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy videos', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Video::findOrFail($id);
+        try {
+            $dado         = Video::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
 
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
         return Redirect::back();
     }
 }

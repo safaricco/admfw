@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\LogR;
 use App\Models\Midia;
 use App\Models\Multimidia;
 use App\Models\Subcategoria;
@@ -16,6 +17,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,20 +28,42 @@ class Noticias extends Controller
 {
     public $tipo_midia      = 10;
     public $tipo_categoria  = 3;
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
 
     public function index()
     {
-        $dados['noticias'] = Noticia::all();
-        return view('admin/noticias/noticias', $dados);
+        try {
+            $dados['noticias'] = Noticia::all();
+            return view('admin/noticias/noticias', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('index noticias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function create()
     {
-        $dados['put']           = false;
-        $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        $dados['dados']         = '';
-        $dados['route']         = 'admin/noticias/store';
-        return view('admin/noticias/dados', $dados);
+        try {
+            $dados['put']           = false;
+            $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
+            $dados['dados']         = '';
+            $dados['route']         = 'admin/noticias/store';
+            return view('admin/noticias/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create noticias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function store(Request $request)
@@ -60,32 +84,40 @@ class Noticias extends Controller
             return redirect('admin/noticias/novo')->withErrors($validation)->withInput();
         else :
 
-            $noticia = new Noticia();
+            try {
+                $noticia = new Noticia();
 
-            $noticia->id_subcategoria   = $request->id_subcategoria;
-            $noticia->titulo            = $request->titulo;
-            $noticia->resumo            = $request->resumo;
-            $noticia->tags              = $request->tags;
-            $noticia->autor             = Auth::user()->name;
-            $noticia->slug              = str_slug($request->titulo);
-            $noticia->texto             = Midia::uploadTextarea($request->texto, $this->tipo_midia);
-            $noticia->destaque          = $request->destaque;
-            $noticia->data              = date('Y-m-d');
-            $noticia->save();
+                $noticia->id_subcategoria   = $request->id_subcategoria;
+                $noticia->titulo            = $request->titulo;
+                $noticia->resumo            = $request->resumo;
+                $noticia->tags              = $request->tags;
+                $noticia->autor             = Auth::user()->name;
+                $noticia->slug              = str_slug($request->titulo);
+                $noticia->texto             = Midia::uploadTextarea($request->texto, $this->tipo_midia);
+                $noticia->destaque          = $request->destaque;
+                $noticia->data              = date('Y-m-d');
+                $noticia->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $noticia->id_noticia);
+                    Midia::uploadDestacada($this->tipo_midia, $noticia->id_noticia);
 
-            endif;
+                endif;
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $noticia->id_noticia);
+                    Midia::uploadMultiplo($this->tipo_midia, $noticia->id_noticia);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Noticia cadastrada com sucesso!');
+                session()->flash('flash_message', 'Noticia cadastrada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($noticia, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -94,15 +126,24 @@ class Noticias extends Controller
 
     public function show($id)
     {
-        $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
-        $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
+        try {
+            $dados['imagens']       = Midia::imagens($this->tipo_midia, $id);
+            $dados['destacada']     = Midia::destacada($this->tipo_midia, $id);
 
-        $dados['put']           = true;
-        $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
-        $dados['dados']         = Noticia::findOrFail($id);
-        $dados['route']         = 'admin/noticias/atualizar/'.$id;
+            $dados['put']           = true;
+            $dados['subcategorias'] = Subcategoria::subs($this->tipo_categoria);
+            $dados['dados']         = Noticia::findOrFail($id);
+            $dados['route']         = 'admin/noticias/atualizar/'.$id;
 
-        return view('admin/noticias/dados', $dados);
+            return view('admin/noticias/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show noticias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function edit($id)
@@ -128,31 +169,38 @@ class Noticias extends Controller
             return redirect('admin/noticias/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $noticia                    = Noticia::findOrFail($id);
+            try {
+                $noticia                    = Noticia::findOrFail($id);
 
-            $noticia->id_subcategoria   = $request->id_subcategoria;
-            $noticia->titulo            = $request->titulo;
-            $noticia->resumo            = $request->resumo;
-            $noticia->tags              = $request->tags;
-            $noticia->autor             = Auth::user()->name;
-            $noticia->slug              = str_slug($request->titulo);
-            $noticia->texto             = Midia::uploadTextarea($request->texto, $this->tipo_midia);
-            $noticia->save();
+                $noticia->id_subcategoria   = $request->id_subcategoria;
+                $noticia->titulo            = $request->titulo;
+                $noticia->resumo            = $request->resumo;
+                $noticia->tags              = $request->tags;
+                $noticia->autor             = Auth::user()->name;
+                $noticia->slug              = str_slug($request->titulo);
+                $noticia->texto             = Midia::uploadTextarea($request->texto, $this->tipo_midia);
+                $noticia->save();
 
-            if ($request->hasFile('imagem')) :
+                if ($request->hasFile('imagem')) :
 
-                Midia::uploadDestacada($this->tipo_midia, $noticia->id_noticia);
+                    Midia::uploadDestacada($this->tipo_midia, $noticia->id_noticia);
 
-            endif;
+                endif;
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $noticia->id_noticia);
+                    Midia::uploadMultiplo($this->tipo_midia, $noticia->id_noticia);
 
-            endif;
-            
-            session()->flash('flash_message', 'Noticia alterada com sucesso!');
+                endif;
 
+                session()->flash('flash_message', 'Noticia alterada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($noticia, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
             return Redirect::back();
         endif; 
     }
@@ -160,24 +208,40 @@ class Noticias extends Controller
 
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Noticia::destroy($id);
+            Noticia::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy noticias', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Noticia::findOrFail($id);
+        try {
+            $dado         = Noticia::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

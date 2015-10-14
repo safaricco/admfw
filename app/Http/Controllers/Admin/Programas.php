@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\LogR;
 use App\Models\Midia;
 use App\Models\Produtos;
 use Illuminate\Http\Request;
@@ -11,25 +12,48 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
 class Programas extends Controller
 {
     public $tipo_midia = 14;
 
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
     public function index()
     {
-        $dados['programas']  = Programa::all();
-        return view('admin/programas/programas', $dados);
+        try {
+            $dados['programas']  = Programa::all();
+            return view('admin/programas/programas', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('index programas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
 
     public function create()
     {
-        $dados['put']    = false;
-         $dados['dados'] = '';
-         $dados['route'] = 'admin/programas/store'; 
-         return view('admin/programas/dados', $dados);
+        try {
+            $dados['put']    = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/programas/store';
+            return view('admin/programas/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('create programas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
 
@@ -46,17 +70,24 @@ class Programas extends Controller
             return redirect('admin/programas/novo')->withErrors($validation)->withInput();
         else :
 
-            $programas = new Programa();
+            try {
+                $programas = new Programa();
 
-            $programas->titulo  = $request->titulo;
-            $programas->texto   = $request->texto;
-            $programas->codigo  = $request->codigo;
-            $programas->data    = $request->data;
+                $programas->titulo  = $request->titulo;
+                $programas->texto   = $request->texto;
+                $programas->codigo  = $request->codigo;
+                $programas->data    = $request->data;
 
-            $programas->save();
+                $programas->save();
 
-            session()->flash('flash_message', 'Programa cadastrada com sucesso!');
+                session()->flash('flash_message', 'Programa cadastrada com sucesso!');
 
+            } catch (\Exception $e) {
+
+                LogR::exception($programas, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
             return Redirect::back();
 
         endif;
@@ -64,12 +95,21 @@ class Programas extends Controller
 
     public function show($id)
     {
-        $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
-        $dados['put']       = true;
-        $dados['dados']     = Programa::findOrFail($id);
-        $dados['route']     = 'admin/programas/atualizar/'.$id;
+        try {
+            $dados['imagens'] = Midia::imagens($this->tipo_midia, $id);
+            $dados['put'] = true;
+            $dados['dados'] = Programa::findOrFail($id);
+            $dados['route'] = 'admin/programas/atualizar/' . $id;
 
-        return view('admin/programas/dados', $dados);
+            return view('admin/programas/dados', $dados);
+
+        } catch (\Exception $e) {
+
+            LogR::exception('show programas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
 
@@ -92,6 +132,7 @@ class Programas extends Controller
             return redirect('admin/programas/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
+
             $programas = Programa::findOrFail($id);
 
             $programas->titulo  = $request->titulo;
@@ -110,24 +151,40 @@ class Programas extends Controller
 
     public function destroy($id)
     {
-        Midia::excluir($id);
+        try {
 
-        Programa::destroy($id);
+            Midia::excluir($id, $this->tipo_midia);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            Programa::destroy($id);
+
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy programas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Programa::findOrFail($id);
+        try {
+            $dado         = Programa::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\LogR;
 use App\Models\Midia;
 use App\Models\Multimidia;
 use App\Models\TipoMidia;
@@ -12,6 +13,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -19,18 +21,40 @@ class Dicas extends Controller
 {
     public $tipo_midia = 5;
 
+    public function __construct()
+    {
+        LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
+    }
+
+
     public function index()
     {
-        $dados['dicas']  = Dica::all();
-        return view('admin/dicas/dicas', $dados);
+        try {
+            $dados['dicas']  = Dica::all();
+            return view('admin/dicas/dicas', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('index dicas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function create()
     {
-        $dados['put']   = false;
-        $dados['dados'] = '';
-        $dados['route'] = 'admin/dicas/store'; 
-        return view('admin/dicas/dados', $dados);
+        try {
+            $dados['put']   = false;
+            $dados['dados'] = '';
+            $dados['route'] = 'admin/dicas/store';
+            return view('admin/dicas/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('create dicas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function store(Request $request)
@@ -45,20 +69,29 @@ class Dicas extends Controller
             return redirect('admin/dicas/novo')->withErrors($validation)->withInput();
         else :
 
-            $dica = new Dica();
+            try {
 
-            $dica->titulo    = $request->titulo;
-            $dica->texto     = $request->texto;
+                $dica = new Dica();
 
-            $dica->save();
+                $dica->titulo    = $request->titulo;
+                $dica->texto     = $request->texto;
 
-            if ($request->hasFile('imagens')) :
+                $dica->save();
 
-                Midia::uploadMultiplo($this->tipo_midia, $dica->id_dica);
+                if ($request->hasFile('imagens')) :
 
-            endif;
+                    Midia::uploadMultiplo($this->tipo_midia, $dica->id_dica);
 
-            session()->flash('flash_message', 'Dica cadastrada com sucesso!');
+                endif;
+
+                session()->flash('flash_message', 'Dica cadastrada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($dica, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
 
@@ -67,14 +100,21 @@ class Dicas extends Controller
 
     public function show($id)
     {
-        $idMidia            = Midia::where('id_registro_tabela', $id)->where('id_tipo_midia', $this->tipo_midia)->first()->id_midia;
-        $dados['imagens']   = Midia::find($idMidia)->multimidia()->where('id_midia', $idMidia)->get();
+        try {
+            $dados['imagens']   = Midia::imagens($this->tipo_midia, $id);
+            $dados['put']       = true;
+            $dados['dados']     = Dica::findOrFail($id);
+            $dados['route']     = 'admin/dicas/atualizar/'.$id;
 
-        $dados['put']       = true;
-        $dados['dados']     = Dica::findOrFail($id);
-        $dados['route']     = 'admin/dicas/atualizar/'.$id;
+            return view('admin/dicas/dados', $dados);
 
-        return view('admin/dicas/dados', $dados);
+        } catch (\Exception $e) {
+
+            LogR::exception('show dicas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            return Redirect::back();
+        }
     }
 
     public function edit($id)
@@ -94,20 +134,28 @@ class Dicas extends Controller
             return redirect('admin/dicas/editar/'.$id)->withErrors($validation)->withInput();
         else :
 
-            $dica = Dica::findOrFail($id);
+            try {
+                $dica = Dica::findOrFail($id);
 
-            $dica->titulo    = $request->titulo;
-            $dica->texto     = $request->texto;
+                $dica->titulo    = $request->titulo;
+                $dica->texto     = $request->texto;
 
-            $dica->save();
+                $dica->save();
 
-            if ($request->hasFile('imagens')) :
+                if ($request->hasFile('imagens')) :
 
-                Midia::uploadMultiplo($this->tipo_midia, $dica->id_dica);
+                    Midia::uploadMultiplo($this->tipo_midia, $dica->id_dica);
 
-            endif;
+                endif;
 
-            session()->flash('flash_message', 'Dicas alterada com sucesso!');
+                session()->flash('flash_message', 'Dicas alterada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($dica, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
 
             return Redirect::back();
         endif; 
@@ -115,24 +163,40 @@ class Dicas extends Controller
 
     public function destroy($id)
     {
-        Midia::excluir($id, $this->tipo_midia);
+        try {
+            Midia::excluir($id, $this->tipo_midia);
 
-        Dica::destroy($id);
+            Dica::destroy($id);
 
-        session()->flash('flash_message', 'Registro apagado com sucesso');
+            session()->flash('flash_message', 'Registro apagado com sucesso');
+
+        } catch (\Exception $e) {
+
+            LogR::exception('destroy dicas', $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }
 
     public function updateStatus($status, $id)
     {
-        $dado         = Dica::findOrFail($id);
+        try {
+            $dado         = Dica::findOrFail($id);
 
-        $dado->status = $status;
+            $dado->status = $status;
 
-        $dado->save();
+            $dado->save();
 
-        session()->flash('flash_message', 'Status alterado com sucesso!');
+            session()->flash('flash_message', 'Status alterado com sucesso!');
+
+        } catch (\Exception $e) {
+
+            LogR::exception($dado, $e);
+            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+        }
 
         return Redirect::back();
     }

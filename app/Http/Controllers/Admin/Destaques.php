@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Funcao;
+use App\Models\Destaque;
 use App\Models\LogR;
+use App\Models\Midia;
+use App\Models\Multimidia;
+use App\Models\TipoMidia;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 
-class Funcoes extends Controller
+class Destaques extends Controller
 {
+
+    private $tipo_midia = 22;
+
     public function __construct()
     {
         LogR::register(last(explode('\\', get_class($this))) . ' ' . explode('@', Route::currentRouteAction())[1]);
@@ -25,10 +32,11 @@ class Funcoes extends Controller
     public function index()
     {
         try {
-            return view('admin/funcoes/funcoes', ['modulos' => Funcao::all()]);
+            return view('admin.destaques.destaques', ['destaques' => Destaque::all()]);
+
         } catch (\Exception $e) {
 
-            LogR::exception('index funcoes', $e);
+            LogR::exception('index destaques', $e);
             session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
 
             return Redirect::back();
@@ -45,12 +53,12 @@ class Funcoes extends Controller
         try {
             $dados['put']   = false;
             $dados['dados'] = '';
-            $dados['route'] = 'admin/configuracoes/modulos/store';
-            return view('admin/funcoes/dados', $dados);
+            $dados['route'] = 'admin/destaques/store';
 
+            return view('admin/destaques/dados', $dados);
         } catch (\Exception $e) {
 
-            LogR::exception('create funcoes', $e);
+            LogR::exception('create destaques', $e);
             session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
 
             return Redirect::back();
@@ -65,7 +73,46 @@ class Funcoes extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'nome'         => 'required|string',
+            'data'         => 'required|date',
+            'hora'         => 'required|string',
+            'profissional' => 'required|string',
+            'imagem'       => 'image|mimes:jpeg,bmp,png,jpg'
+        ]);
+
+        if ($validation->fails()) :
+            return redirect('admin/destaques/novo')->withErrors($validation)->withInput();
+        else :
+
+            try {
+                $destaque = new Destaque();
+
+                $destaque->nome         = $request->nome;
+                $destaque->data         = date('Y-m-d', strtotime($request->data));
+                $destaque->hora         = $request->hora;
+                $destaque->profissional = $request->profissional;
+
+                $destaque->save();
+
+                // FAZENDO O UPLOAD E GRAVANDO NA TABELA MULTIMIDIA / VERIFICANDO SE O ARQUIVO N�O EST� CORROMPIDO
+                if ($request->hasFile('imagem')) :
+
+                    Midia::uploadUnico($this->tipo_midia, $destaque->id_destaque);
+                endif;
+
+                session()->flash('flash_message', 'Banners cadastrada com sucesso!');
+
+            } catch (\Exception $e) {
+
+                LogR::exception($destaque, $e);
+                session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
+
+            }
+
+            return Redirect::back();
+
+        endif;
     }
 
     /**
@@ -76,19 +123,7 @@ class Funcoes extends Controller
      */
     public function show($id)
     {
-        try {
-            $dados['put']   = true;
-            $dados['dados'] = Funcao::findOrFail($id);
-            $dados['route'] = 'admin/configuracoes/modulos/atualizar/'.$id;
-            return view('admin/funcoes/dados', $dados);
-
-        } catch (\Exception $e) {
-
-            LogR::exception('show funcoes', $e);
-            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
-
-            return Redirect::back();
-        }
+        //
     }
 
     /**
@@ -122,39 +157,6 @@ class Funcoes extends Controller
      */
     public function destroy($id)
     {
-        try {
-            Funcao::destroy($id);
-
-            session()->flash('flash_message', 'Registro apagado com sucesso');
-
-        } catch (\Exception $e) {
-
-            LogR::exception('destroy funcoes', $e);
-            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
-
-        }
-
-        return Redirect::back();
-    }
-
-    public function updateStatus($status, $id)
-    {
-        try {
-            $dado         = Funcao::findOrFail($id);
-
-            $dado->status = $status;
-
-            $dado->save();
-
-            session()->flash('flash_message', 'Status alterado com sucesso!');
-
-        } catch (\Exception $e) {
-
-            LogR::exception($dado, $e);
-            session()->flash('flash_message', 'Ops!! Ocorreu algum problema!. ' . $e->getMessage());
-
-        }
-
-        return Redirect::back();
+        //
     }
 }

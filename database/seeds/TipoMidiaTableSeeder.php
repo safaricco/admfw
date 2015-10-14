@@ -32,5 +32,7 @@ class TipoMidiaTableSeeder extends Seeder
         /* 19 */ DB::table('tipo_midia')->insert(['descricao' => 'empregos']);
         /* 20 */ DB::table('tipo_midia')->insert(['descricao' => 'depoimentos']);
         /* 21 */ DB::table('tipo_midia')->insert(['descricao' => 'help']);
+        /* 22 */ DB::table('tipo_midia')->insert(['descricao' => 'destaques']);
+        /* 23 */ DB::table('tipo_midia')->insert(['descricao' => 'equipe']);
     }
 }
