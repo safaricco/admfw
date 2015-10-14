@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
+use Spatie\LaravelAnalytics\LaravelAnalytics;
 
 class Analytic extends Controller
 {
@@ -24,6 +25,16 @@ class Analytic extends Controller
      */
     public function index()
     {
+        $ana = new LaravelAnalytics('1053462447296-gpkkptu0se912kh7osc5qj99fsal0fj7.apps.googleusercontent.com', 'UA-61838331-1');
+        $ana->setSiteId(env('ANALYTICS_SITE_ID'));
+        dd($ana->getVisitorsAndPageViews(7));
+
+
+
+
+
+
+
         try {
             $dados['dados'] = Analytics::findOrFail(1);
             $dados['route'] = '/admin/configuracoes/analytics/editar/1';
@@ -75,4 +86,9 @@ class Analytic extends Controller
 
         endif;
     }
+
+//    public function analytics()
+//    {
+//
+//    }
 }
